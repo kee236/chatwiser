@@ -2,12 +2,11 @@
 
      $active_group = 'default';
      $active_record = FALSE;
-     $db['default']['hostname'] = 'chatwisre-db-prod.c41086my2r41.us-east-1.rds.amazonaws.com';
-     $db['default']['username'] = 'root';
-     $db['default']['password'] = 'eoGDsuglKcSkLeWY0zzn';
-     $db['default']['database'] = 'chatwiser';
+     $db['default']['hostname'] = '';
+     $db['default']['username'] = '';
+     $db['default']['password'] = '';
+     $db['default']['database'] = '';
      $db['default']['dbdriver'] = 'mysqli';
-     $db['default']['port'] = 3306;
      $db['default']['dbprefix'] = '';
      $db['default']['pconnect'] = FALSE;
      $db['default']['db_debug'] = TRUE;
