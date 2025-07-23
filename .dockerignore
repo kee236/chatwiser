@@ -1,0 +1,9 @@
+vendor/
+node_modules/
+.git/
+.gitignore
+db_data/
+*.log
+*.md
+*.txt
+.DS_Store 
