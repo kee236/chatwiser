@@ -1,0 +1,377 @@
+/* Modern Sidebar Styles - Override existing sidebar */
+.main-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 80px;
+  background: var(--mat-card-elevated-container-color, #ffffff) !important;
+  border-radius: 24px;
+  margin: 24px 0 24px 24px;
+  box-shadow: 0 8px 32px rgba(60,60,100,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+  transition: width 0.4s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s, background 0.3s;
+  overflow: hidden;
+}
+
+/* RTL Sidebar positioning */
+html[dir="rtl"] .main-sidebar {
+  left: auto;
+  right: 0;
+  margin: 24px 24px 24px 0;
+  border-radius: 24px 0 0 24px;
+}
+
+/* Expanded sidebar */
+body:not(.sidebar-mini) .main-sidebar {
+  width: 260px;
+  align-items: flex-start;
+  padding-left: 12px;
+}
+
+/* RTL expanded sidebar */
+html[dir="rtl"] body:not(.sidebar-mini) .main-sidebar {
+  align-items: flex-end;
+  padding-left: 0;
+  padding-right: 12px;
+}
+
+/* Sidebar brand/logo */
+.main-sidebar .sidebar-brand {
+  margin: 24px 0 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  text-align: center;
+}
+
+.main-sidebar .sidebar-brand a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-sidebar .sidebar-brand img {
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+/* Hide small logo in mini mode */
+body.sidebar-mini .main-sidebar .sidebar-brand-sm {
+  display: none !important;
+}
+
+/* Sidebar content scrollable area */
+.main-sidebar .sidebar-content {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 16px;
+}
+
+/* Custom scrollbar for sidebar */
+.main-sidebar .sidebar-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.main-sidebar .sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-sidebar .sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+
+.main-sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+/* Dark theme scrollbar */
+html.dark-theme .main-sidebar .sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+}
+
+html.dark-theme .main-sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Sidebar menu */
+.main-sidebar .sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.main-sidebar .sidebar-menu li {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Menu headers */
+.main-sidebar .sidebar-menu li.menu-header {
+  font-size: 11px;
+  color: #a1a8ae;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 8px 16px 4px 16px;
+  letter-spacing: 1.2px;
+  display: flex;
+  align-items: center;
+}
+
+/* RTL menu header icon positioning */
+html[dir="rtl"] .main-sidebar .sidebar-menu li.menu-header {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .main-sidebar .sidebar-menu li.menu-header .material-icons {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+/* Menu header icons */
+.main-sidebar .sidebar-menu li.menu-header .material-icons {
+  font-size: 18px;
+  margin-right: 8px;
+  transition: margin 0.2s;
+}
+
+.main-sidebar .sidebar-menu li.menu-header .header-text {
+  display: inline;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+/* Hide header text when sidebar is collapsed */
+body.sidebar-mini .main-sidebar .sidebar-menu li.menu-header .header-text {
+  display: none;
+  opacity: 0;
+}
+
+body.sidebar-mini .main-sidebar .sidebar-menu li.menu-header .material-icons {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+html[dir="rtl"] body.sidebar-mini .main-sidebar .sidebar-menu li.menu-header .material-icons {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Menu items */
+.main-sidebar .sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: background 0.2s, color 0.2s;
+  font-size: 16px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+body:not(.sidebar-mini) .main-sidebar .sidebar-menu li a {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* RTL menu item alignment */
+html[dir="rtl"] body:not(.sidebar-mini) .main-sidebar .sidebar-menu li a {
+  justify-content: flex-start;
+  text-align: right;
+}
+
+/* Menu item icons */
+.main-sidebar .sidebar-menu li a i {
+  width: 28px;
+  text-align: center;
+  font-size: 18px;
+  margin-right: 0;
+  margin-left: 0;
+  transition: color 0.2s, margin 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body:not(.sidebar-mini) .main-sidebar .sidebar-menu li a i {
+  margin-right: 16px;
+  margin-left: 0;
+}
+
+/* RTL icon margins */
+html[dir="rtl"] body:not(.sidebar-mini) .main-sidebar .sidebar-menu li a i {
+  margin-left: 16px;
+  margin-right: 0;
+}
+
+/* Menu item text */
+.main-sidebar .sidebar-menu li a span {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+body:not(.sidebar-mini) .main-sidebar .sidebar-menu li a span {
+  display: inline;
+  opacity: 1;
+}
+
+/* Menu item hover and active states */
+.main-sidebar .sidebar-menu li.active a, 
+.main-sidebar .sidebar-menu li a:hover {
+  background: #0D8BF1;
+  color: #fff;
+}
+
+/* Profile section */
+.main-sidebar .sidebar-profile {
+  margin-top: auto;
+  padding: 16px 12px 12px 12px;
+  width: 100%;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+body:not(.sidebar-mini) .main-sidebar .sidebar-profile {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.sidebar-mini .main-sidebar .sidebar-profile {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Profile card */
+.main-sidebar .sidebar-profile-inner {
+  background: #fff6f3;
+  border-radius: 16px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(252,146,123,0.08);
+}
+
+.main-sidebar .sidebar-profile-inner img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.main-sidebar .sidebar-profile-inner .profile-info {
+  flex: 1;
+}
+
+.main-sidebar .sidebar-profile-inner .profile-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.main-sidebar .sidebar-profile-inner .profile-role {
+  font-size: 13px;
+  color: #fc927b;
+}
+
+.main-sidebar .sidebar-profile-inner .logout-btn {
+  background: none;
+  border: none;
+  color: #fc927b;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* RTL fix for profile card */
+html[dir="rtl"] .main-sidebar .sidebar-profile {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .main-sidebar { 
+    margin: 16px 0 16px 4px; 
+  }
+  html[dir="rtl"] .main-sidebar { 
+    margin: 16px 4px 16px 0; 
+  }
+}
+
+@media (max-width: 600px) {
+  .main-sidebar { 
+    left: 0; 
+    top: 0; 
+    margin: 0; 
+    border-radius: 0 24px 24px 0; 
+    width: 0;
+    overflow: hidden;
+    transition: width 0.4s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s, background 0.3s;
+  }
+  html[dir="rtl"] .main-sidebar {
+    left: auto;
+    right: 0;
+    border-radius: 24px 0 0 24px;
+  }
+  body.sidebar-show .main-sidebar {
+    width: 260px;
+    overflow: visible;
+  }
+}
+
+/* Dark theme support */
+html.dark-theme .main-sidebar {
+  background: var(--mat-card-elevated-container-color, #2a2b31) !important;
+}
+
+/* Main content adjustment */
+.main-content {
+  margin-left: 104px;
+  transition: margin-left 0.4s cubic-bezier(.25,.8,.25,1);
+}
+
+body:not(.sidebar-mini) .main-content {
+  margin-left: 284px;
+}
+
+/* RTL main content */
+html[dir="rtl"] .main-content {
+  margin-left: 0;
+  margin-right: 104px;
+}
+
+html[dir="rtl"] body:not(.sidebar-mini) .main-content {
+  margin-left: 0;
+  margin-right: 284px;
+}
+
+@media (max-width: 600px) {
+  .main-content, 
+  body.sidebar-show ~ .main-content { 
+    margin-left: 0; 
+  }
+  html[dir="rtl"] .main-content, 
+  html[dir="rtl"] body.sidebar-show ~ .main-content { 
+    margin-right: 0; 
+  }
+} 

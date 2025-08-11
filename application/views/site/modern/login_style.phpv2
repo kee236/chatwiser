@@ -1,0 +1,514 @@
+<?php
+// Enhanced Chatwiser Login Page Styles
+?>
+
+<style>
+/* Enhanced Login Page Styles */
+.login-page-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated Background Particles */
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+    10% { 
+        opacity: 1;
+    }
+    90% { 
+        opacity: 1;
+    }
+    100% { 
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Enhanced Logo Section */
+.login-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: slideInDown 1s ease-out;
+}
+
+.logo-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.logo-image {
+    width: 180px;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.brand-tagline {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Wrapper for login-brand and login-card */
+.login-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 768px;
+}
+
+/* Enhanced Login Card */
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    animation: slideInUp 0.8s ease-out;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    max-width: 768px;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 2rem 2rem 1rem;
+}
+
+.login-title {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.login-title i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+/* Enhanced Form Fields */
+.card-body {
+    padding: 2rem;
+}
+
+.floating-field {
+    margin-bottom: 1.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.enhanced-input {
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 18px 20px 18px 50px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.enhanced-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.floating-label {
+    position: absolute;
+    left: 50px;
+    top: 18px;
+    color: #6c757d;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background: transparent;
+}
+
+.enhanced-input:focus + .floating-label,
+.enhanced-input:not(:placeholder-shown) + .floating-label {
+    top: 8px;
+    left: 50px;
+    font-size: 0.8rem;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.enhanced-input:focus ~ .input-icon {
+    color: #667eea;
+}
+
+.forgot-link {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.forgot-link:hover {
+    color: #764ba2;
+    text-decoration: none;
+}
+
+/* Enhanced Login Button */
+.login-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.btn-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Social Login */
+.social-login-section {
+    margin-top: 2rem;
+}
+
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.divider span {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.social-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.social-btn {
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    cursor: pointer;
+}
+
+.social-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.google-btn:hover {
+    border-color: #ea4335;
+}
+
+.facebook-btn:hover {
+    border-color: #1877f2;
+}
+
+/* Enhanced Footer */
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.signup-link, .team-login-link, .user-login-link {
+    margin: 0.5rem 0;
+}
+
+.signup-link a, .team-login-link a, .user-login-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.signup-link a:hover, .team-login-link a:hover, .user-login-link a:hover {
+    color: #764ba2;
+}
+
+/* Enhanced Alerts */
+.animated-alert {
+    border-radius: 12px;
+    border: none;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: slideInDown 0.5s ease-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-card {
+        margin: 1rem;
+        border-radius: 15px;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .social-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .brand-tagline {
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+    
+    .logo-image {
+        width: 150px;
+    }
+}
+
+/* Loading State */
+.login-btn.loading .btn-text {
+    opacity: 0;
+}
+
+.login-btn.loading .btn-loader {
+    display: block !important;
+}
+
+/* Focus States */
+.enhanced-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Hover Effects */
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth Transitions */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.7);
+}
+</style>
+
+<script>
+// Enhanced JavaScript for Login Page
+document.addEventListener('DOMContentLoaded', function() {
+    // Form submission with loading state
+    const loginForm = document.querySelector('.login-form');
+    const loginBtn = document.querySelector('.login-btn');
+    const btnText = document.querySelector('.btn-text');
+    const btnLoader = document.querySelector('.btn-loader');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', function() {
+            loginBtn.classList.add('loading');
+            btnText.style.opacity = '0';
+            btnLoader.style.display = 'block';
+        });
+    }
+    
+    // Enhanced input focus effects
+    const inputs = document.querySelectorAll('.enhanced-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+    });
+    
+    // Particle animation enhancement
+    const particles = document.querySelectorAll('.particle');
+    particles.forEach((particle, index) => {
+        particle.style.animationDelay = `${index * 0.8}s`;
+    });
+});
+</script>
