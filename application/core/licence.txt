@@ -1,0 +1,1 @@
+{"is_active":"75a65e0df3d883bbf348e0d68bd57ea9","purchase_code":"51a3aa62-24fb-4a85-bd88-401838850e01","item_name":"ChatPion: AI Chatbot for Facebook, Instagram, eCommerce, SMS\/Email & Social Media Marketing (SaaS)","buy_at":"2025-07-24T00:15:18+10:00","licence_type":"Extended License","domain":"chatwiser.co","checking_date":"2025-07-23"}

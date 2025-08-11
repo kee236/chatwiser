@@ -1,13 +1,11 @@
 <?php require_once("Home.php"); // including home controller
 
 class Stripe_action extends Home
-
 {
 
 
 
 	public function __construct()
-
 	{
 
 		parent::__construct();
@@ -20,172 +18,162 @@ class Stripe_action extends Home
 
 	}
 
-	
+
 
 	public function index()
-
 	{
 
-		$response= $this->stripe_class->stripe_payment_action();
+		$response = $this->stripe_class->stripe_payment_action();
 
-		if($response['status']=='Error'){
+		if ($response['status'] == 'Error') {
 
 			echo $response['message'];
 
 			exit();
 
 		}
-	
-
-		$currency = isset($response['charge_info']['currency'])?$response['charge_info']['currency']:"";
-
-		$currency=strtoupper($currency);
-		
-
-		$receiver_email=$response['email'];
 
 
+		$currency = isset($response['charge_info']['currency']) ? $response['charge_info']['currency'] : "";
 
-		if($currency=='JPY' || $currency=='VND')
+		$currency = strtoupper($currency);
 
-			$payment_amount=$response['charge_info']['amount'];
 
+		$receiver_email = $response['email'];
+
+
+
+		if ($currency == 'JPY' || $currency == 'VND')
+
+			$payment_amount = $response['charge_info']['amount'];
 		else
 
-			$payment_amount=$response['charge_info']['amount']/100;
+			$payment_amount = $response['charge_info']['amount'] / 100;
 
 
-		$transaction_id=$response['charge_info']['balance_transaction'];
+		$transaction_id = $response['charge_info']['balance_transaction'];
 
-		$payment_date=date("Y-m-d H:i:s",$response['charge_info']['created']) ;
+		$payment_date = date("Y-m-d H:i:s", $response['charge_info']['created']);
 
-		$country=isset($response['charge_info']['source']['country'])?$response['charge_info']['source']['country']:"";
+		$country = isset($response['charge_info']['source']['country']) ? $response['charge_info']['source']['country'] : "";
 
 
-		$stripe_card_source=isset($response['charge_info']['source'])?$response['charge_info']['source']:"";
+		$stripe_card_source = isset($response['charge_info']['source']) ? $response['charge_info']['source'] : "";
 
-		$stripe_card_source=json_encode($stripe_card_source);
-			
+		$stripe_card_source = json_encode($stripe_card_source);
+
 
 		$user_id = $this->uri->segment(3);
 
 		$package_id = $this->uri->segment(4);
 
-		$user_id=$user_id;
+		$user_id = $user_id;
 
-		$package_id=$package_id;
-
-		
-
-		$simple_where['where'] = array('user_id'=>$user_id);
-
-		$select = array('cycle_start_date','cycle_expired_date');
-
-		
-
-		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-		
-
-		$prev_cycle_expired_date="";
-
-		$cycle_start_date ="";
-
-    	$cycle_expired_date ="";
-
-		$config_data=array();
-
-		$price=0;
-
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
-
-		if(is_array($package_data) && array_key_exists(0, $package_data))
-
-			$price=$package_data[0]["price"];
-
-		$validity=$package_data[0]["validity"];
+		$package_id = $package_id;
 
 
 
-		$validity_str='+'.$validity.' day';
+		$simple_where['where'] = array('user_id' => $user_id);
 
-		
+		$select = array('cycle_start_date', 'cycle_expired_date');
 
-		foreach($prev_payment_info as $info){
 
-			$prev_cycle_expired_date=$info['cycle_expired_date'];
 
-		}
+		$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
-		
 
-		if($prev_cycle_expired_date==""){
 
-			$cycle_start_date=date('Y-m-d');
+		$prev_cycle_expired_date = "";
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		$cycle_start_date = "";
+
+		$cycle_expired_date = "";
+
+		$config_data = array();
+
+		$price = 0;
+
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
+
+		if (is_array($package_data) && array_key_exists(0, $package_data))
+
+			$price = $package_data[0]["price"];
+
+		$validity = $package_data[0]["validity"];
+
+
+
+		$validity_str = '+' . $validity . ' day';
+
+
+
+		foreach ($prev_payment_info as $info) {
+
+			$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 		}
 
-		
 
-		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
 
-			$cycle_start_date=date('Y-m-d');
+		if ($prev_cycle_expired_date == "") {
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_start_date = date('Y-m-d');
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
+
+		} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
+
+			$cycle_start_date = date('Y-m-d');
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
+
+		} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
+
+			$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 		}
 
-		
 
-		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
 
-			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
-
-		}
-
-		
-
-		
 
 		/** insert the transaction into database ***/
 
-		
 
-		$insert_data=array(
 
-			"verify_status" 	=>"",
+		$insert_data = array(
 
-			"first_name"		=>"",
+			"verify_status" => "",
 
-			"last_name"			=>"",
+			"first_name" => "",
 
-			"paypal_email"		=>"STRIPE",
+			"last_name" => "",
 
-			"receiver_email" 	=>$receiver_email,
+			"paypal_email" => "STRIPE",
 
-			"country"			=>$country,
+			"receiver_email" => $receiver_email,
 
-			"payment_date" 		=>$payment_date,
+			"country" => $country,
 
-			"payment_type"		=>"STRIPE",
+			"payment_date" => $payment_date,
 
-			"transaction_id"	=>$transaction_id,
+			"payment_type" => "STRIPE",
 
-			"user_id"           =>$user_id,
+			"transaction_id" => $transaction_id,
 
-			"package_id"		=>$package_id,
+			"user_id" => $user_id,
 
-			"cycle_start_date"	=>$cycle_start_date,
+			"package_id" => $package_id,
 
-			"cycle_expired_date"=>$cycle_expired_date,
+			"cycle_start_date" => $cycle_start_date,
 
-			"paid_amount"	    =>$payment_amount,
+			"cycle_expired_date" => $cycle_expired_date,
 
-			"stripe_card_source"=>$stripe_card_source
+			"paid_amount" => $payment_amount,
+
+			"stripe_card_source" => $stripe_card_source
 
 		);
 
@@ -195,19 +183,19 @@ class Stripe_action extends Home
 
 		$this->basic->insert_data('transaction_history', $insert_data);
 
-		$this->session->set_userdata("payment_success",1);
+		$this->session->set_userdata("payment_success", 1);
 
-		
+
 
 		/** Update user table **/
 
-		$table='users';
+		$table = 'users';
 
-		$where=array('id'=>$user_id);
+		$where = array('id' => $user_id);
 
-		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+		$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-		$this->basic->update_data($table,$where,$data);
+		$this->basic->update_data($table, $where, $data);
 
 
 
@@ -223,17 +211,17 @@ class Stripe_action extends Home
 
 		$where = array();
 
-		$where['where'] = array('id'=>$user_id);
+		$where['where'] = array('id' => $user_id);
 
-		$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+		$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+		$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+		if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -243,11 +231,11 @@ class Stripe_action extends Home
 
 			$subject = $payment_confirmation_email_template[0]['subject'];
 
-			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-            //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -259,11 +247,11 @@ class Stripe_action extends Home
 
 			$subject = "Payment Confirmation";
 
-			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-            //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -271,13 +259,13 @@ class Stripe_action extends Home
 
 
 
-        // new payment made email
+		// new payment made email
 
-		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+		if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -285,11 +273,11 @@ class Stripe_action extends Home
 
 			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+			$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-            //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -303,29 +291,29 @@ class Stripe_action extends Home
 
 			$message = "New payment has been made by {$user_email[0]['name']}";
 
-            //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 		}
 
-		
 
-		$redirect_url=base_url()."payment/transaction_log?action=success";
+
+		$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 
 
 		// affiliate Section
 
-		if($this->addon_exist('affiliate_system')) {
+		if ($this->addon_exist('affiliate_system')) {
 
-			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-			if($affiliate_id != 0) {
+			if ($affiliate_id != 0) {
 
-				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 			}
 
@@ -333,7 +321,7 @@ class Stripe_action extends Home
 
 
 
-		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -369,11 +357,12 @@ class Stripe_action extends Home
 
 
 
-	protected function subscriber_login($user_id='') {
+	protected function subscriber_login($user_id = '')
+	{
 
 
 
-		if($user_id == '' || $user_id == 0) {
+		if ($user_id == '' || $user_id == 0) {
 
 			redirect('home/login', 'location');
 
@@ -381,7 +370,7 @@ class Stripe_action extends Home
 
 
 
-		$info = $this->basic->get_data("users",['where'=>['id'=>$user_id,'status'=>'1']]);
+		$info = $this->basic->get_data("users", ['where' => ['id' => $user_id, 'status' => '1']]);
 
 
 
@@ -395,13 +384,14 @@ class Stripe_action extends Home
 
 		$is_mobile = '0';
 
-		if(is_mobile()) $is_mobile = '1';
+		if (is_mobile())
+			$is_mobile = '1';
 
-		$this->session->set_userdata("is_mobile",$is_mobile);
+		$this->session->set_userdata("is_mobile", $is_mobile);
 
 
 
-		$this->session->set_userdata('user_type', $user_type); 
+		$this->session->set_userdata('user_type', $user_type);
 
 		$this->session->set_userdata('logged_in', 1);
 
@@ -413,31 +403,31 @@ class Stripe_action extends Home
 
 		$this->session->set_userdata('user_login_email', $info[0]['email']);
 
-		$this->session->set_userdata('expiry_date',$info[0]['expired_date']);
+		$this->session->set_userdata('expiry_date', $info[0]['expired_date']);
 
-		$this->session->set_userdata('brand_logo',$logo);
-
-
-
-        $this->set_google_config_session($user_id);
+		$this->session->set_userdata('brand_logo', $logo);
 
 
 
-        $this->set_facebook_config_session($user_id);
+		// $this->set_google_config_session($user_id);
 
 
 
-        $package_info = $this->basic->get_data("package", $where=array("where"=>array("id"=>$info[0]["package_id"])));
+		$this->set_facebook_config_session($user_id);
 
-        $package_info_session=array();
 
-        if(array_key_exists(0, $package_info))
 
-        $package_info_session=$package_info[0];
+		$package_info = $this->basic->get_data("package", $where = array("where" => array("id" => $info[0]["package_id"])));
 
-        $this->session->set_userdata('package_info', $package_info_session);
+		$package_info_session = array();
 
-        $this->session->set_userdata('current_package_id',0);
+		if (array_key_exists(0, $package_info))
+
+			$package_info_session = $package_info[0];
+
+		$this->session->set_userdata('package_info', $package_info_session);
+
+		$this->session->set_userdata('current_package_id', 0);
 
 
 
@@ -447,21 +437,18 @@ class Stripe_action extends Home
 
 
 
-	public function razorpay_action($user_id='',$package_id='',$raz_order_id_session="")
-
+	public function razorpay_action($user_id = '', $package_id = '', $raz_order_id_session = "")
 	{
 
 		$razorpay_key_id = '';
 
 		$razorpay_key_secret = '';
 
-		$where['where'] = array('deleted'=>'0');
+		$where['where'] = array('deleted' => '0');
 
-		$payment_config = $this->basic->get_data('payment_config',$where,$select='');
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
 
-		if(!empty($payment_config)) 
-
-		{
+		if (!empty($payment_config)) {
 
 			$currency = $payment_config[0]["currency"];
 
@@ -469,43 +456,41 @@ class Stripe_action extends Home
 
 			$razorpay_key_secret = isset($payment_config[0]['razorpay_key_secret']) ? $payment_config[0]['razorpay_key_secret'] : '';
 
-		} 
-
-		else 
+		} else
 
 			$currency = "USD";
 
 
 
-		$this->load->library('razorpay_class_ecommerce'); 
+		$this->load->library('razorpay_class_ecommerce');
 
-		$this->razorpay_class_ecommerce->key_id=$razorpay_key_id;    
+		$this->razorpay_class_ecommerce->key_id = $razorpay_key_id;
 
-		$this->razorpay_class_ecommerce->key_secret=$razorpay_key_secret;    
+		$this->razorpay_class_ecommerce->key_secret = $razorpay_key_secret;
 
-		$response= $this->razorpay_class_ecommerce->razorpay_payment_action($raz_order_id_session);
+		$response = $this->razorpay_class_ecommerce->razorpay_payment_action($raz_order_id_session);
 
 
 
-		if(isset($response['status']) && $response['status']=='Error'){
+		if (isset($response['status']) && $response['status'] == 'Error') {
 
 			echo $response['message'];
 
 			exit();
 
-		} 
+		}
 
 
 
-		$currency = isset($response['charge_info']['currency'])?$response['charge_info']['currency']:"INR";
+		$currency = isset($response['charge_info']['currency']) ? $response['charge_info']['currency'] : "INR";
 
 		$currency = strtoupper($currency);
 
-		$payment_amount = isset($response['charge_info']['amount_paid'])?($response['charge_info']['amount_paid']/100):"0";
+		$payment_amount = isset($response['charge_info']['amount_paid']) ? ($response['charge_info']['amount_paid'] / 100) : "0";
 
-		$transaction_id = isset($response['charge_info']['id'])?$response['charge_info']['id']:"";
+		$transaction_id = isset($response['charge_info']['id']) ? $response['charge_info']['id'] : "";
 
-		$payment_date= isset($response['charge_info']['created_at']) ? date("Y-m-d H:i:s",$response['charge_info']['created_at']) : '';
+		$payment_date = isset($response['charge_info']['created_at']) ? date("Y-m-d H:i:s", $response['charge_info']['created_at']) : '';
 
 
 
@@ -517,79 +502,71 @@ class Stripe_action extends Home
 
 
 
-		$user_id=$user_id;
+		$user_id = $user_id;
 
-		$package_id=$package_id;
-
-		
-
-		$simple_where['where'] = array('user_id'=>$user_id);
-
-		$select = array('cycle_start_date','cycle_expired_date');
-
-		
-
-		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-		
-
-		$prev_cycle_expired_date="";
+		$package_id = $package_id;
 
 
 
+		$simple_where['where'] = array('user_id' => $user_id);
 
-
-		$config_data=array();
-
-		$price=0;
-
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
-
-		if(is_array($package_data) && array_key_exists(0, $package_data))
-
-			$price=$package_data[0]["price"];
-
-		$validity=$package_data[0]["validity"];
+		$select = array('cycle_start_date', 'cycle_expired_date');
 
 
 
-		$validity_str='+'.$validity.' day';
+		$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
-		
 
-		foreach($prev_payment_info as $info){
 
-			$prev_cycle_expired_date=$info['cycle_expired_date'];
+		$prev_cycle_expired_date = "";
 
-		}
 
-		
 
-		if($prev_cycle_expired_date==""){
 
-			$cycle_start_date=date('Y-m-d');
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		$config_data = array();
+
+		$price = 0;
+
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
+
+		if (is_array($package_data) && array_key_exists(0, $package_data))
+
+			$price = $package_data[0]["price"];
+
+		$validity = $package_data[0]["validity"];
+
+
+
+		$validity_str = '+' . $validity . ' day';
+
+
+
+		foreach ($prev_payment_info as $info) {
+
+			$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 		}
 
-		
 
-		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
 
-			$cycle_start_date=date('Y-m-d');
+		if ($prev_cycle_expired_date == "") {
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_start_date = date('Y-m-d');
 
-		}
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		
+		} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
-		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			$cycle_start_date = date('Y-m-d');
 
-			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
+
+			$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 		}
 
@@ -599,39 +576,39 @@ class Stripe_action extends Home
 
 		/** insert the transaction into database ***/
 
-		$receiver_email=$this->session->userdata('user_login_email');
+		$receiver_email = $this->session->userdata('user_login_email');
 
-		$country="";
+		$country = "";
 
-		$insert_data=array(
+		$insert_data = array(
 
-			"verify_status" 	=>"",
+			"verify_status" => "",
 
-			"first_name"		=>"",
+			"first_name" => "",
 
-			"last_name"			=>"",
+			"last_name" => "",
 
-			"paypal_email"		=>"Razorpay",
+			"paypal_email" => "Razorpay",
 
-			"receiver_email" 	=>$receiver_email,
+			"receiver_email" => $receiver_email,
 
-			"country"			=>$country,
+			"country" => $country,
 
-			"payment_date" 		=>$payment_date,
+			"payment_date" => $payment_date,
 
-			"payment_type"		=>"Razorpay",
+			"payment_type" => "Razorpay",
 
-			"transaction_id"	=>$transaction_id,
+			"transaction_id" => $transaction_id,
 
-			"user_id"           =>$user_id,
+			"user_id" => $user_id,
 
-			"package_id"		=>$package_id,
+			"package_id" => $package_id,
 
-			"cycle_start_date"	=>$cycle_start_date,
+			"cycle_start_date" => $cycle_start_date,
 
-			"cycle_expired_date"=>$cycle_expired_date,
+			"cycle_expired_date" => $cycle_expired_date,
 
-			"paid_amount"	    =>$payment_amount
+			"paid_amount" => $payment_amount
 
 		);
 
@@ -641,19 +618,19 @@ class Stripe_action extends Home
 
 		$this->basic->insert_data('transaction_history', $insert_data);
 
-		$this->session->set_userdata("payment_success",1);
+		$this->session->set_userdata("payment_success", 1);
 
 
 
 		/** Update user table **/
 
-		$table='users';
+		$table = 'users';
 
-		$where=array('id'=>$user_id);
+		$where = array('id' => $user_id);
 
-		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+		$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-		$this->basic->update_data($table,$where,$data);
+		$this->basic->update_data($table, $where, $data);
 
 
 
@@ -667,17 +644,17 @@ class Stripe_action extends Home
 
 		$where = array();
 
-		$where['where'] = array('id'=>$user_id);
+		$where['where'] = array('id' => $user_id);
 
-		$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+		$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+		$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+		if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -687,11 +664,11 @@ class Stripe_action extends Home
 
 			$subject = $payment_confirmation_email_template[0]['subject'];
 
-			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-            //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -703,11 +680,11 @@ class Stripe_action extends Home
 
 			$subject = "Payment Confirmation";
 
-			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-            //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -715,13 +692,13 @@ class Stripe_action extends Home
 
 
 
-        // new payment made email
+		// new payment made email
 
-		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+		if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -729,11 +706,11 @@ class Stripe_action extends Home
 
 			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+			$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-            //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -747,25 +724,25 @@ class Stripe_action extends Home
 
 			$message = "New payment has been made by {$user_email[0]['name']}";
 
-            //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 		}
 
 
 
-        // Affiliate Payment system
+		// Affiliate Payment system
 
-		if($this->addon_exist('affiliate_system')) {
+		if ($this->addon_exist('affiliate_system')) {
 
-			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-			if($affiliate_id != 0) {
+			if ($affiliate_id != 0) {
 
-				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 			}
 
@@ -775,7 +752,7 @@ class Stripe_action extends Home
 
 
 
-		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -803,7 +780,7 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url=base_url()."payment/transaction_log?action=success";
+		$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 		redirect($redirect_url, 'refresh');
 
@@ -813,13 +790,14 @@ class Stripe_action extends Home
 
 
 
-	public function paystack_action($user_id='',$package_id='',$reference="")
-
+	public function paystack_action($user_id = '', $package_id = '', $reference = "")
 	{
 
-		if($user_id== "" || $user_id==0) exit;
+		if ($user_id == "" || $user_id == 0)
+			exit;
 
-		if($package_id== "" || $package_id==0) exit;
+		if ($package_id == "" || $package_id == 0)
+			exit;
 
 
 
@@ -829,135 +807,123 @@ class Stripe_action extends Home
 
 
 
-		$user_id=$user_id;
+		$user_id = $user_id;
 
-		$package_id=$package_id;
+		$package_id = $package_id;
 
 
 
 		$paystack_secret_key = '';
 
-		$where['where'] = array('deleted'=>'0');
+		$where['where'] = array('deleted' => '0');
 
-		$payment_config = $this->basic->get_data('payment_config',$where,$select='');
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
 
-		if(!empty($payment_config)) 
-
-		{
+		if (!empty($payment_config)) {
 
 			$currency = $payment_config[0]["currency"];
 
 			$paystack_secret_key = isset($payment_config[0]['paystack_secret_key']) ? $payment_config[0]['paystack_secret_key'] : '';
 
-		} 
-
-		else 
+		} else
 
 			$currency = "USD";
 
 
 
-		$this->load->library('paystack_class_ecommerce'); 
+		$this->load->library('paystack_class_ecommerce');
 
-		$this->paystack_class_ecommerce->secret_key=$paystack_secret_key;      
+		$this->paystack_class_ecommerce->secret_key = $paystack_secret_key;
 
-		$response= $this->paystack_class_ecommerce->paystack_payment_action($reference);
+		$response = $this->paystack_class_ecommerce->paystack_payment_action($reference);
 
 
 
-		if(isset($response['status']) && $response['status']=='Error'){
+		if (isset($response['status']) && $response['status'] == 'Error') {
 
 			echo $response['message'];
 
 			exit();
 
-		} 
+		}
 
 
 
-		$receiver_email=$this->session->userdata('user_login_email');
+		$receiver_email = $this->session->userdata('user_login_email');
 
-		$country="";
+		$country = "";
 
 
 
-		$currency = isset($response['charge_info']['data']['currency'])?$response['charge_info']['data']['currency']:"NGN";
+		$currency = isset($response['charge_info']['data']['currency']) ? $response['charge_info']['data']['currency'] : "NGN";
 
 		$currency = strtoupper($currency);
 
-		$payment_amount = isset($response['charge_info']['data']['amount'])?($response['charge_info']['data']['amount']/100):"0";
+		$payment_amount = isset($response['charge_info']['data']['amount']) ? ($response['charge_info']['data']['amount'] / 100) : "0";
 
-		$transaction_id = isset($response['charge_info']['data']['id'])?$response['charge_info']['data']['id']:"";
+		$transaction_id = isset($response['charge_info']['data']['id']) ? $response['charge_info']['data']['id'] : "";
 
-		$payment_date= isset($response['charge_info']['data']['paid_at']) ? date("Y-m-d H:i:s",strtotime($response['charge_info']['data']['paid_at'])) : '';
-
-
-
-		$simple_where['where'] = array('user_id'=>$user_id);
-
-		$select = array('cycle_start_date','cycle_expired_date');
-
-		
-
-		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-		
-
-		$prev_cycle_expired_date="";
+		$payment_date = isset($response['charge_info']['data']['paid_at']) ? date("Y-m-d H:i:s", strtotime($response['charge_info']['data']['paid_at'])) : '';
 
 
 
-		$config_data=array();
+		$simple_where['where'] = array('user_id' => $user_id);
 
-		$price=0;
-
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
-
-		if(is_array($package_data) && array_key_exists(0, $package_data))
-
-			$price=$package_data[0]["price"];
-
-		$validity=$package_data[0]["validity"];
+		$select = array('cycle_start_date', 'cycle_expired_date');
 
 
 
-		$validity_str='+'.$validity.' day';
+		$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-		foreach($prev_payment_info as $info){
-
-			$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-		}
+		$prev_cycle_expired_date = "";
 
 
 
-		if($prev_cycle_expired_date==""){
+		$config_data = array();
 
-			$cycle_start_date=date('Y-m-d');
+		$price = 0;
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
+
+		if (is_array($package_data) && array_key_exists(0, $package_data))
+
+			$price = $package_data[0]["price"];
+
+		$validity = $package_data[0]["validity"];
+
+
+
+		$validity_str = '+' . $validity . ' day';
+
+
+
+		foreach ($prev_payment_info as $info) {
+
+			$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 		}
 
 
 
-		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+		if ($prev_cycle_expired_date == "") {
 
-			$cycle_start_date=date('Y-m-d');
+			$cycle_start_date = date('Y-m-d');
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		}
+		} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+			$cycle_start_date = date('Y-m-d');
 
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+		} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+			$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 		}
 
@@ -965,35 +931,35 @@ class Stripe_action extends Home
 
 		/** insert the transaction into database ***/
 
-		$insert_data=array(
+		$insert_data = array(
 
-			"verify_status" 	=>"",
+			"verify_status" => "",
 
-			"first_name"		=>"",
+			"first_name" => "",
 
-			"last_name"			=>"",
+			"last_name" => "",
 
-			"paypal_email"		=>"Paystack",
+			"paypal_email" => "Paystack",
 
-			"receiver_email" 	=>$receiver_email,
+			"receiver_email" => $receiver_email,
 
-			"country"			=>$country,
+			"country" => $country,
 
-			"payment_date" 		=>$payment_date,
+			"payment_date" => $payment_date,
 
-			"payment_type"		=>"Paystack",
+			"payment_type" => "Paystack",
 
-			"transaction_id"	=>$transaction_id,
+			"transaction_id" => $transaction_id,
 
-			"user_id"           =>$user_id,
+			"user_id" => $user_id,
 
-			"package_id"		=>$package_id,
+			"package_id" => $package_id,
 
-			"cycle_start_date"	=>$cycle_start_date,
+			"cycle_start_date" => $cycle_start_date,
 
-			"cycle_expired_date"=>$cycle_expired_date,
+			"cycle_expired_date" => $cycle_expired_date,
 
-			"paid_amount"	    =>$payment_amount
+			"paid_amount" => $payment_amount
 
 		);
 
@@ -1001,19 +967,19 @@ class Stripe_action extends Home
 
 		$this->basic->insert_data('transaction_history', $insert_data);
 
-		$this->session->set_userdata("payment_success",1);
+		$this->session->set_userdata("payment_success", 1);
 
 
 
 		/** Update user table **/
 
-		$table='users';
+		$table = 'users';
 
-		$where=array('id'=>$user_id);
+		$where = array('id' => $user_id);
 
-		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+		$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-		$this->basic->update_data($table,$where,$data);
+		$this->basic->update_data($table, $where, $data);
 
 
 
@@ -1027,17 +993,17 @@ class Stripe_action extends Home
 
 		$where = array();
 
-		$where['where'] = array('id'=>$user_id);
+		$where['where'] = array('id' => $user_id);
 
-		$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+		$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+		$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+		if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -1047,11 +1013,11 @@ class Stripe_action extends Home
 
 			$subject = $payment_confirmation_email_template[0]['subject'];
 
-			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-	        //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1063,11 +1029,11 @@ class Stripe_action extends Home
 
 			$subject = "Payment Confirmation";
 
-			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-	        //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1075,13 +1041,13 @@ class Stripe_action extends Home
 
 
 
-	    // new payment made email
+		// new payment made email
 
-		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+		if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -1089,11 +1055,11 @@ class Stripe_action extends Home
 
 			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+			$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-	        //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1107,25 +1073,25 @@ class Stripe_action extends Home
 
 			$message = "New payment has been made by {$user_email[0]['name']}";
 
-	        //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 		}
 
 
 
-	    // affiliate Section
+		// affiliate Section
 
-		if($this->addon_exist('affiliate_system')) {
+		if ($this->addon_exist('affiliate_system')) {
 
-			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-			if($affiliate_id != 0) {
+			if ($affiliate_id != 0) {
 
-				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 			}
 
@@ -1133,7 +1099,7 @@ class Stripe_action extends Home
 
 
 
-		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -1161,7 +1127,7 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url=base_url()."payment/transaction_log?action=success";
+		$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 		redirect($redirect_url, 'refresh');
 
@@ -1173,13 +1139,14 @@ class Stripe_action extends Home
 
 
 
-	public function mercadopago_action($user_id='',$package_id='')
-
+	public function mercadopago_action($user_id = '', $package_id = '')
 	{
 
-		if($user_id== "" || $user_id==0) exit;
+		if ($user_id == "" || $user_id == 0)
+			exit;
 
-		if($package_id== "" || $package_id==0) exit;
+		if ($package_id == "" || $package_id == 0)
+			exit;
 
 
 
@@ -1197,9 +1164,9 @@ class Stripe_action extends Home
 
 		// $package_id = $this->session->userdata('mercadopago_payment_package_id');
 
-		$user_id=$user_id;
+		$user_id = $user_id;
 
-		$package_id=$package_id;
+		$package_id = $package_id;
 
 
 
@@ -1209,13 +1176,13 @@ class Stripe_action extends Home
 
 
 
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
 		$description = isset($package_data[0]['package_name']) ? $package_data[0]['package_name'] : '';
 
 
 
-		$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['email']);
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['email']);
 
 		$payer_email = isset($user_info[0]['email']) ? $user_info[0]['email'] : '';
 
@@ -1225,91 +1192,81 @@ class Stripe_action extends Home
 
 
 
-		$this->mercadopago->accesstoken=$mercadopago_access_token;
+		$this->mercadopago->accesstoken = $mercadopago_access_token;
 
-		$this->mercadopago->transaction_amount=$payment_amount;
+		$this->mercadopago->transaction_amount = $payment_amount;
 
-		$this->mercadopago->token=$token;
+		$this->mercadopago->token = $token;
 
-		$this->mercadopago->description=$description;
+		$this->mercadopago->description = $description;
 
-		$this->mercadopago->installments=$installments;
+		$this->mercadopago->installments = $installments;
 
-		$this->mercadopago->payment_method_id=$payment_method_id;
+		$this->mercadopago->payment_method_id = $payment_method_id;
 
-		$this->mercadopago->issuer_id=$issuer_id;
+		$this->mercadopago->issuer_id = $issuer_id;
 
-		$this->mercadopago->payer_email=$payer_email;
+		$this->mercadopago->payer_email = $payer_email;
 
 
 
 		$response = $this->mercadopago->payment_action();
 
-		if(isset($response['status']) && $response['status']=='approved')
+		if (isset($response['status']) && $response['status'] == 'approved') {
 
-		{
+			$simple_where['where'] = array('user_id' => $user_id);
 
-			$simple_where['where'] = array('user_id'=>$user_id);
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-			$select = array('cycle_start_date','cycle_expired_date');
-
-			$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-			$prev_cycle_expired_date="";
+			$prev_cycle_expired_date = "";
 
-			$price=0;
-
-
-
-			$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
-
-			if(is_array($package_data) && array_key_exists(0, $package_data))
-
-				$price=$package_data[0]["price"];
-
-			$validity=$package_data[0]["validity"];
+			$price = 0;
 
 
 
-			$validity_str='+'.$validity.' day';
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-			
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-			foreach($prev_payment_info as $info){
+				$price = $package_data[0]["price"];
 
-				$prev_cycle_expired_date=$info['cycle_expired_date'];
+			$validity = $package_data[0]["validity"];
+
+
+
+			$validity_str = '+' . $validity . ' day';
+
+
+
+			foreach ($prev_payment_info as $info) {
+
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 			}
 
-			
 
-			if($prev_cycle_expired_date==""){
 
-				$cycle_start_date=date('Y-m-d');
+			if ($prev_cycle_expired_date == "") {
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_start_date = date('Y-m-d');
 
-			}
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
-			else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+				$cycle_start_date = date('Y-m-d');
 
-				$cycle_start_date=date('Y-m-d');
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-			}
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-			
-
-			else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
-
-				$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
-
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 			}
 
@@ -1317,9 +1274,9 @@ class Stripe_action extends Home
 
 			/** insert the transaction into database ***/
 
-			$receiver_email=$this->session->userdata('user_login_email');
+			$receiver_email = $this->session->userdata('user_login_email');
 
-			$country="";
+			$country = "";
 
 			$payment_date = date('Y-m-d H:i:s');
 
@@ -1327,57 +1284,57 @@ class Stripe_action extends Home
 
 
 
-			$insert_data=array(
+			$insert_data = array(
 
-				"verify_status" 	=>"",
+				"verify_status" => "",
 
-				"first_name"		=>"",
+				"first_name" => "",
 
-				"last_name"			=>"",
+				"last_name" => "",
 
-				"paypal_email"		=>"Mercadopago",
+				"paypal_email" => "Mercadopago",
 
-				"receiver_email" 	=>$receiver_email,
+				"receiver_email" => $receiver_email,
 
-				"country"			=>$country,
+				"country" => $country,
 
-				"payment_date" 		=>$payment_date,
+				"payment_date" => $payment_date,
 
-				"payment_type"		=>"Mercadopago",
+				"payment_type" => "Mercadopago",
 
-				"transaction_id"	=>$transaction_id,
+				"transaction_id" => $transaction_id,
 
-				"user_id"           =>$user_id,
+				"user_id" => $user_id,
 
-				"package_id"		=>$package_id,
+				"package_id" => $package_id,
 
-				"cycle_start_date"	=>$cycle_start_date,
+				"cycle_start_date" => $cycle_start_date,
 
-				"cycle_expired_date"=>$cycle_expired_date,
+				"cycle_expired_date" => $cycle_expired_date,
 
-				"paid_amount"	    =>$payment_amount
+				"paid_amount" => $payment_amount
 
 			);
 
-			
 
-			
+
+
 
 			$this->basic->insert_data('transaction_history', $insert_data);
 
-			$this->session->set_userdata("payment_success",1);
+			$this->session->set_userdata("payment_success", 1);
 
 
 
 			/** Update user table **/
 
-			$table='users';
+			$table = 'users';
 
-			$where=array('id'=>$user_id);
+			$where = array('id' => $user_id);
 
-			$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-			$this->basic->update_data($table,$where,$data);
+			$this->basic->update_data($table, $where, $data);
 
 
 
@@ -1391,17 +1348,17 @@ class Stripe_action extends Home
 
 			$where = array();
 
-			$where['where'] = array('id'=>$user_id);
+			$where['where'] = array('id' => $user_id);
 
-			$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-			$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-			if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -1411,11 +1368,11 @@ class Stripe_action extends Home
 
 				$subject = $payment_confirmation_email_template[0]['subject'];
 
-				$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-			        //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1427,11 +1384,11 @@ class Stripe_action extends Home
 
 				$subject = "Payment Confirmation";
 
-				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-			        //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1441,11 +1398,11 @@ class Stripe_action extends Home
 
 			// new payment made email
 
-			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-			if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -1453,11 +1410,11 @@ class Stripe_action extends Home
 
 				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-				$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-			        //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1471,9 +1428,9 @@ class Stripe_action extends Home
 
 				$message = "New payment has been made by {$user_email[0]['name']}";
 
-			        //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 			}
 
@@ -1481,15 +1438,15 @@ class Stripe_action extends Home
 
 			// affiliate Section
 
-			if($this->addon_exist('affiliate_system')) {
+			if ($this->addon_exist('affiliate_system')) {
 
-				$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-				if($affiliate_id != 0) {
+				if ($affiliate_id != 0) {
 
-					$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 				}
 
@@ -1497,7 +1454,7 @@ class Stripe_action extends Home
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -1525,21 +1482,17 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=success";
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 			redirect($redirect_url, 'refresh');
 
 
 
-		}
-
-		else
-
-		{
+		} else {
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -1565,7 +1518,7 @@ class Stripe_action extends Home
 
 			}
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
@@ -1581,15 +1534,16 @@ class Stripe_action extends Home
 
 
 
-	public function mollie_action($user_id='',$package_id='')
-
+	public function mollie_action($user_id = '', $package_id = '')
 	{
 
 
 
-		if($user_id== "" || $user_id==0) exit;
+		if ($user_id == "" || $user_id == 0)
+			exit;
 
-		if($package_id== "" || $package_id==0) exit;
+		if ($package_id == "" || $package_id == 0)
+			exit;
 
 
 
@@ -1599,59 +1553,55 @@ class Stripe_action extends Home
 
 
 
-		$user_id=$user_id;
+		$user_id = $user_id;
 
-		$package_id=$package_id;
+		$package_id = $package_id;
 
 
 
 		$mollie_api_key = '';
 
-		$where['where'] = array('deleted'=>'0');
+		$where['where'] = array('deleted' => '0');
 
-		$payment_config = $this->basic->get_data('payment_config',$where,$select='');
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
 
-		if(!empty($payment_config)) 
-
-		{
+		if (!empty($payment_config)) {
 
 			$currency = $payment_config[0]["currency"];
 
 			$mollie_api_key = isset($payment_config[0]['mollie_api_key']) ? $payment_config[0]['mollie_api_key'] : '';
 
-		} 
-
-		else 
+		} else
 
 			$currency = "USD";
 
 
 
-		$this->load->library('mollie_class_ecommerce'); 
+		$this->load->library('mollie_class_ecommerce');
 
-		$this->mollie_class_ecommerce->ec_order_id=$this->session->userdata('mollie_unique_id'); 
+		$this->mollie_class_ecommerce->ec_order_id = $this->session->userdata('mollie_unique_id');
 
-		$this->mollie_class_ecommerce->api_key=$mollie_api_key; 
+		$this->mollie_class_ecommerce->api_key = $mollie_api_key;
 
-		$response= $this->mollie_class_ecommerce->mollie_payment_action();
+		$response = $this->mollie_class_ecommerce->mollie_payment_action();
 
 
 
-		if(isset($response['status']) && $response['status']=='Error'){
+		if (isset($response['status']) && $response['status'] == 'Error') {
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
 			exit();
 
-		}      
+		}
 
-		
 
-		$receiver_email="";
 
-		$country="";
+		$receiver_email = "";
+
+		$country = "";
 
 
 
@@ -1663,77 +1613,69 @@ class Stripe_action extends Home
 
 		$transaction_id = isset($response['charge_info']['id']) ? $response['charge_info']['id'] : "";
 
-		$payment_date= isset($response['charge_info']['createdAt']) ? date("Y-m-d H:i:s",strtotime($response['charge_info']['createdAt'])) : '';
+		$payment_date = isset($response['charge_info']['createdAt']) ? date("Y-m-d H:i:s", strtotime($response['charge_info']['createdAt'])) : '';
 
 
 
-		$simple_where['where'] = array('user_id'=>$user_id);
+		$simple_where['where'] = array('user_id' => $user_id);
 
-		$select = array('cycle_start_date','cycle_expired_date');
-
-		
-
-		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-		
-
-		$prev_cycle_expired_date="";
+		$select = array('cycle_start_date', 'cycle_expired_date');
 
 
 
-
-
-		$config_data=array();
-
-		$price=0;
-
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
-
-		if(is_array($package_data) && array_key_exists(0, $package_data))
-
-			$price=$package_data[0]["price"];
-
-		$validity=$package_data[0]["validity"];
+		$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-		$validity_str='+'.$validity.' day';
+		$prev_cycle_expired_date = "";
 
-		
 
-		foreach($prev_payment_info as $info){
 
-			$prev_cycle_expired_date=$info['cycle_expired_date'];
 
-		}
 
-		
+		$config_data = array();
 
-		if($prev_cycle_expired_date==""){
+		$price = 0;
 
-			$cycle_start_date=date('Y-m-d');
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		if (is_array($package_data) && array_key_exists(0, $package_data))
+
+			$price = $package_data[0]["price"];
+
+		$validity = $package_data[0]["validity"];
+
+
+
+		$validity_str = '+' . $validity . ' day';
+
+
+
+		foreach ($prev_payment_info as $info) {
+
+			$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 		}
 
-		
 
-		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
 
-			$cycle_start_date=date('Y-m-d');
+		if ($prev_cycle_expired_date == "") {
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_start_date = date('Y-m-d');
 
-		}
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		
+		} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
-		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			$cycle_start_date = date('Y-m-d');
 
-			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+		} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
+
+			$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 		}
 
@@ -1741,61 +1683,61 @@ class Stripe_action extends Home
 
 		/** insert the transaction into database ***/
 
-		$receiver_email=$this->session->userdata('user_login_email');
+		$receiver_email = $this->session->userdata('user_login_email');
 
-		$country="";
+		$country = "";
 
-		$insert_data=array(
+		$insert_data = array(
 
-			"verify_status" 	=>"",
+			"verify_status" => "",
 
-			"first_name"		=>"",
+			"first_name" => "",
 
-			"last_name"			=>"",
+			"last_name" => "",
 
-			"paypal_email"		=>"Mollie",
+			"paypal_email" => "Mollie",
 
-			"receiver_email" 	=>$receiver_email,
+			"receiver_email" => $receiver_email,
 
-			"country"			=>$country,
+			"country" => $country,
 
-			"payment_date" 		=>$payment_date,
+			"payment_date" => $payment_date,
 
-			"payment_type"		=>"Mollie",
+			"payment_type" => "Mollie",
 
-			"transaction_id"	=>$transaction_id,
+			"transaction_id" => $transaction_id,
 
-			"user_id"           =>$user_id,
+			"user_id" => $user_id,
 
-			"package_id"		=>$package_id,
+			"package_id" => $package_id,
 
-			"cycle_start_date"	=>$cycle_start_date,
+			"cycle_start_date" => $cycle_start_date,
 
-			"cycle_expired_date"=>$cycle_expired_date,
+			"cycle_expired_date" => $cycle_expired_date,
 
-			"paid_amount"	    =>$payment_amount
+			"paid_amount" => $payment_amount
 
 		);
 
-		
 
-		
+
+
 
 		$this->basic->insert_data('transaction_history', $insert_data);
 
-		$this->session->set_userdata("payment_success",1);
+		$this->session->set_userdata("payment_success", 1);
 
 
 
 		/** Update user table **/
 
-		$table='users';
+		$table = 'users';
 
-		$where=array('id'=>$user_id);
+		$where = array('id' => $user_id);
 
-		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+		$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-		$this->basic->update_data($table,$where,$data);
+		$this->basic->update_data($table, $where, $data);
 
 
 
@@ -1809,17 +1751,17 @@ class Stripe_action extends Home
 
 		$where = array();
 
-		$where['where'] = array('id'=>$user_id);
+		$where['where'] = array('id' => $user_id);
 
-		$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+		$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+		$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+		if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -1829,11 +1771,11 @@ class Stripe_action extends Home
 
 			$subject = $payment_confirmation_email_template[0]['subject'];
 
-			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-		        //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1845,11 +1787,11 @@ class Stripe_action extends Home
 
 			$subject = "Payment Confirmation";
 
-			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-		        //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1857,13 +1799,13 @@ class Stripe_action extends Home
 
 
 
-		    // new payment made email
+		// new payment made email
 
-		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+		if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -1871,11 +1813,11 @@ class Stripe_action extends Home
 
 			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+			$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-		        //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -1889,9 +1831,9 @@ class Stripe_action extends Home
 
 			$message = "New payment has been made by {$user_email[0]['name']}";
 
-		        //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 		}
 
@@ -1899,15 +1841,15 @@ class Stripe_action extends Home
 
 		// affiliate Section
 
-		if($this->addon_exist('affiliate_system')) {
+		if ($this->addon_exist('affiliate_system')) {
 
-			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-			if($affiliate_id != 0) {
+			if ($affiliate_id != 0) {
 
-				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 			}
 
@@ -1915,7 +1857,7 @@ class Stripe_action extends Home
 
 
 
-		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -1943,7 +1885,7 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url=base_url()."payment/transaction_log?action=success";
+		$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 		redirect($redirect_url, 'refresh');
 
@@ -1954,12 +1896,11 @@ class Stripe_action extends Home
 
 
 	public function sslcommerz_action()
-
 	{
 
-		$where['where'] = array('deleted'=>'0');
+		$where['where'] = array('deleted' => '0');
 
-		$payment_config = $this->basic->get_data('payment_config',$where,$select='');
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
 
 		$store_id = isset($payment_config[0]['sslcommerz_store_id']) ? $payment_config[0]['sslcommerz_store_id'] : '';
 
@@ -2005,7 +1946,7 @@ class Stripe_action extends Home
 
 		$post_data['currency'] = $currency;
 
-		$post_data['tran_id'] = "SSLCZ_TEST_".uniqid();
+		$post_data['tran_id'] = "SSLCZ_TEST_" . uniqid();
 
 		$post_data['success_url'] = base_url('stripe_action/sslcommerz_success');
 
@@ -2031,7 +1972,7 @@ class Stripe_action extends Home
 
 		$post_data['cus_phone'] = 'N/A';
 
-		
+
 
 		# SHIPMENT INFORMATION
 
@@ -2061,10 +2002,9 @@ class Stripe_action extends Home
 
 		# REQUEST SEND TO SSLCOMMERZ
 
-		if($sslcommers_mode == 'live')
+		if ($sslcommers_mode == 'live')
 
 			$direct_api_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
-
 		else
 
 			$direct_api_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
@@ -2073,13 +2013,13 @@ class Stripe_action extends Home
 
 		$handle = curl_init();
 
-		curl_setopt($handle, CURLOPT_URL, $direct_api_url );
+		curl_setopt($handle, CURLOPT_URL, $direct_api_url);
 
 		curl_setopt($handle, CURLOPT_TIMEOUT, 30);
 
 		curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 30);
 
-		curl_setopt($handle, CURLOPT_POST, 1 );
+		curl_setopt($handle, CURLOPT_POST, 1);
 
 		curl_setopt($handle, CURLOPT_POSTFIELDS, $post_data);
 
@@ -2091,7 +2031,7 @@ class Stripe_action extends Home
 
 
 
-		$content = curl_exec($handle );
+		$content = curl_exec($handle);
 
 
 
@@ -2099,15 +2039,15 @@ class Stripe_action extends Home
 
 
 
-		if($code == 200 && !( curl_errno($handle))) {
+		if ($code == 200 && !(curl_errno($handle))) {
 
-			curl_close( $handle);
+			curl_close($handle);
 
 			$sslcommerzResponse = $content;
 
 		} else {
 
-			curl_close( $handle);
+			curl_close($handle);
 
 			echo "FAILED TO CONNECT WITH SSLCOMMERZ API";
 
@@ -2119,7 +2059,7 @@ class Stripe_action extends Home
 
 		# PARSE THE JSON RESPONSE
 
-		$sslcz = json_decode($sslcommerzResponse, true );
+		$sslcz = json_decode($sslcommerzResponse, true);
 
 
 
@@ -2127,19 +2067,17 @@ class Stripe_action extends Home
 
 
 
-		if(isset($sslcz['GatewayPageURL']) && $sslcz['GatewayPageURL']!="") {
+		if (isset($sslcz['GatewayPageURL']) && $sslcz['GatewayPageURL'] != "") {
 
 			// this is important to show the popup, return or echo to sent json response back
 
-			echo   json_encode(['status' => 'success', 'data' => $sslcz['GatewayPageURL'], 'logo' => $sslcz['storeLogo'] ]);
+			echo json_encode(['status' => 'success', 'data' => $sslcz['GatewayPageURL'], 'logo' => $sslcz['storeLogo']]);
 
-		} 
-
-		else {
+		} else {
 
 			$error = isset($sslcz['failedreason']) ? $sslcz['failedreason'] : $this->lang->line('JSON Data parsing error!');
 
-			echo   json_encode(['status' => 'fail', 'data' => null, 'message' => $error]);
+			echo json_encode(['status' => 'fail', 'data' => null, 'message' => $error]);
 
 		}
 
@@ -2148,7 +2086,6 @@ class Stripe_action extends Home
 
 
 	public function sslcommerz_success()
-
 	{
 
 		$user_id = isset($_POST['value_a']) ? $_POST['value_a'] : 0;
@@ -2163,72 +2100,64 @@ class Stripe_action extends Home
 
 
 
-		$simple_where['where'] = array('user_id'=>$user_id);
+		$simple_where['where'] = array('user_id' => $user_id);
 
-		$select = array('cycle_start_date','cycle_expired_date');
+		$select = array('cycle_start_date', 'cycle_expired_date');
 
-		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-
+		$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-		$prev_cycle_expired_date="";
 
-		$price=0;
+
+		$prev_cycle_expired_date = "";
+
+		$price = 0;
 
 		$cycle_start_date = "";
-    	$cycle_expired_date = "";
+		$cycle_expired_date = "";
 
 
 
-		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+		$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-		if(is_array($package_data) && array_key_exists(0, $package_data))
+		if (is_array($package_data) && array_key_exists(0, $package_data))
 
-			$price=$package_data[0]["price"];
+			$price = $package_data[0]["price"];
 
-		$validity=$package_data[0]["validity"];
-
-
-
-		$validity_str='+'.$validity.' day';
+		$validity = $package_data[0]["validity"];
 
 
 
-		foreach($prev_payment_info as $info){
-
-			$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-		}
+		$validity_str = '+' . $validity . ' day';
 
 
 
-		if($prev_cycle_expired_date==""){
+		foreach ($prev_payment_info as $info) {
 
-			$cycle_start_date=date('Y-m-d');
-
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 		}
 
 
 
-		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+		if ($prev_cycle_expired_date == "") {
 
-			$cycle_start_date=date('Y-m-d');
+			$cycle_start_date = date('Y-m-d');
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		}
+		} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+			$cycle_start_date = date('Y-m-d');
 
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+		} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+			$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 		}
 
@@ -2236,13 +2165,13 @@ class Stripe_action extends Home
 
 		/** insert the transaction into database ***/
 
-		$userinfos = $this->basic->get_data("users",['where'=>['id'=>$user_id,'status'=>'1']],['email']);
+		$userinfos = $this->basic->get_data("users", ['where' => ['id' => $user_id, 'status' => '1']], ['email']);
 
-		$receiver_email=isset($userinfos[0]['email']) ? $userinfos[0]['email']:"";
+		$receiver_email = isset($userinfos[0]['email']) ? $userinfos[0]['email'] : "";
 
 		// $receiver_email=$this->session->userdata('user_login_email');
 
-		$country="";
+		$country = "";
 
 		$payment_date = date('Y-m-d H:i:s');
 
@@ -2250,35 +2179,35 @@ class Stripe_action extends Home
 
 
 
-		$insert_data=array(
+		$insert_data = array(
 
-			"verify_status"     =>"",
+			"verify_status" => "",
 
-			"first_name"        =>"",
+			"first_name" => "",
 
-			"last_name"         =>"",
+			"last_name" => "",
 
-			"paypal_email"      =>"",
+			"paypal_email" => "",
 
-			"receiver_email"    =>$receiver_email,
+			"receiver_email" => $receiver_email,
 
-			"country"           =>$country,
+			"country" => $country,
 
-			"payment_date"      =>$payment_date,
+			"payment_date" => $payment_date,
 
-			"payment_type"      =>'SSLCOMMERZ',
+			"payment_type" => 'SSLCOMMERZ',
 
-			"transaction_id"    =>$transaction_id,
+			"transaction_id" => $transaction_id,
 
-			"user_id"           =>$user_id,
+			"user_id" => $user_id,
 
-			"package_id"        =>$package_id,
+			"package_id" => $package_id,
 
-			"cycle_start_date"  =>$cycle_start_date,
+			"cycle_start_date" => $cycle_start_date,
 
-			"cycle_expired_date"=>$cycle_expired_date,
+			"cycle_expired_date" => $cycle_expired_date,
 
-			"paid_amount"       =>$payment_amount
+			"paid_amount" => $payment_amount
 
 		);
 
@@ -2288,19 +2217,19 @@ class Stripe_action extends Home
 
 		$this->basic->insert_data('transaction_history', $insert_data);
 
-		$this->session->set_userdata("payment_success",1);
+		$this->session->set_userdata("payment_success", 1);
 
 
 
 		/** Update user table **/
 
-		$table='users';
+		$table = 'users';
 
-		$where=array('id'=>$user_id);
+		$where = array('id' => $user_id);
 
-		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+		$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-		$this->basic->update_data($table,$where,$data);
+		$this->basic->update_data($table, $where, $data);
 
 
 
@@ -2314,17 +2243,17 @@ class Stripe_action extends Home
 
 		$where = array();
 
-		$where['where'] = array('id'=>$user_id);
+		$where['where'] = array('id' => $user_id);
 
-		$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+		$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+		$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+		if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -2334,11 +2263,11 @@ class Stripe_action extends Home
 
 			$subject = $payment_confirmation_email_template[0]['subject'];
 
-			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-                //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2350,11 +2279,11 @@ class Stripe_action extends Home
 
 			$subject = "Payment Confirmation";
 
-			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-                //send mail to user
+			//send mail to user
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2362,13 +2291,13 @@ class Stripe_action extends Home
 
 
 
-        // new payment made email
+		// new payment made email
 
-		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+		if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -2376,11 +2305,11 @@ class Stripe_action extends Home
 
 			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+			$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-                //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2394,25 +2323,25 @@ class Stripe_action extends Home
 
 			$message = "New payment has been made by {$user_email[0]['name']}";
 
-                //send mail to admin
+			//send mail to admin
 
-			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+			$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 		}
 
 
 
-        // affiliate Section
+		// affiliate Section
 
-		if($this->addon_exist('affiliate_system')) {
+		if ($this->addon_exist('affiliate_system')) {
 
-			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-			if($affiliate_id != 0) {
+			if ($affiliate_id != 0) {
 
-				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 			}
 
@@ -2420,7 +2349,7 @@ class Stripe_action extends Home
 
 
 
-		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -2448,7 +2377,7 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url=base_url()."payment/transaction_log?action=success";
+		$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 		redirect($redirect_url, 'refresh');
 
@@ -2459,10 +2388,9 @@ class Stripe_action extends Home
 
 
 	public function sslcommerz_fail()
-
 	{
 
-		$redirect_url=base_url()."payment/transaction_log?action=cancel";
+		$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 		redirect($redirect_url, 'refresh');
 
@@ -2471,12 +2399,9 @@ class Stripe_action extends Home
 
 
 	public function senangpay_action()
-
 	{
 
-		if($_GET['status_id'] == 1)
-
-		{
+		if ($_GET['status_id'] == 1) {
 
 
 
@@ -2486,37 +2411,37 @@ class Stripe_action extends Home
 
 			$ex_order_id = explode("_", $order_id);
 
-			$package_id = isset($ex_order_id[0]) ? $ex_order_id[0]:0;
+			$package_id = isset($ex_order_id[0]) ? $ex_order_id[0] : 0;
 
-			$user_id = isset($ex_order_id[1]) ? $ex_order_id[1]:0;
+			$user_id = isset($ex_order_id[1]) ? $ex_order_id[1] : 0;
 
 			$transaction_id = isset($_GET['transaction_id']) ? $_GET['transaction_id'] : 0;
 
 
 
-			$simple_where['where'] = array('user_id'=>$user_id);
+			$simple_where['where'] = array('user_id' => $user_id);
 
-			$select = array('cycle_start_date','cycle_expired_date');
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-			$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-			$prev_cycle_expired_date="";
-
-			$price=0;
 
 
+			$prev_cycle_expired_date = "";
 
-			$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+			$price = 0;
 
-			if(is_array($package_data) && array_key_exists(0, $package_data))
 
-				$price=$package_data[0]["price"];
 
-			$validity=$package_data[0]["validity"];
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
+
+			if (is_array($package_data) && array_key_exists(0, $package_data))
+
+				$price = $package_data[0]["price"];
+
+			$validity = $package_data[0]["validity"];
 
 
 
@@ -2524,43 +2449,35 @@ class Stripe_action extends Home
 
 
 
-			$validity_str='+'.$validity.' day';
+			$validity_str = '+' . $validity . ' day';
 
 
 
-			foreach($prev_payment_info as $info){
+			foreach ($prev_payment_info as $info) {
 
-				$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-			}
-
-
-
-			if($prev_cycle_expired_date==""){
-
-				$cycle_start_date=date('Y-m-d');
-
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 			}
 
 
 
-			else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+			if ($prev_cycle_expired_date == "") {
 
-				$cycle_start_date=date('Y-m-d');
+				$cycle_start_date = date('Y-m-d');
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			}
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-				$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 			}
 
@@ -2568,13 +2485,13 @@ class Stripe_action extends Home
 
 			/** insert the transaction into database ***/
 
-			$userinfos = $this->basic->get_data("users",['where'=>['id'=>$user_id,'status'=>'1']],['email']);
+			$userinfos = $this->basic->get_data("users", ['where' => ['id' => $user_id, 'status' => '1']], ['email']);
 
-			$receiver_email=isset($userinfos[0]['email']) ? $userinfos[0]['email']:"";
+			$receiver_email = isset($userinfos[0]['email']) ? $userinfos[0]['email'] : "";
 
 			// $receiver_email=$this->session->userdata('user_login_email');
 
-			$country="";
+			$country = "";
 
 			$payment_date = date('Y-m-d H:i:s');
 
@@ -2582,35 +2499,35 @@ class Stripe_action extends Home
 
 
 
-			$insert_data=array(
+			$insert_data = array(
 
-				"verify_status"     =>"",
+				"verify_status" => "",
 
-				"first_name"        =>"",
+				"first_name" => "",
 
-				"last_name"         =>"",
+				"last_name" => "",
 
-				"paypal_email"      =>"",
+				"paypal_email" => "",
 
-				"receiver_email"    =>$receiver_email,
+				"receiver_email" => $receiver_email,
 
-				"country"           =>$country,
+				"country" => $country,
 
-				"payment_date"      =>$payment_date,
+				"payment_date" => $payment_date,
 
-				"payment_type"      =>'Senangpay',
+				"payment_type" => 'Senangpay',
 
-				"transaction_id"    =>$transaction_id,
+				"transaction_id" => $transaction_id,
 
-				"user_id"           =>$user_id,
+				"user_id" => $user_id,
 
-				"package_id"        =>$package_id,
+				"package_id" => $package_id,
 
-				"cycle_start_date"  =>$cycle_start_date,
+				"cycle_start_date" => $cycle_start_date,
 
-				"cycle_expired_date"=>$cycle_expired_date,
+				"cycle_expired_date" => $cycle_expired_date,
 
-				"paid_amount"       =>$payment_amount
+				"paid_amount" => $payment_amount
 
 			);
 
@@ -2620,19 +2537,19 @@ class Stripe_action extends Home
 
 			$this->basic->insert_data('transaction_history', $insert_data);
 
-			$this->session->set_userdata("payment_success",1);
+			$this->session->set_userdata("payment_success", 1);
 
 
 
 			/** Update user table **/
 
-			$table='users';
+			$table = 'users';
 
-			$where=array('id'=>$user_id);
+			$where = array('id' => $user_id);
 
-			$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-			$this->basic->update_data($table,$where,$data);
+			$this->basic->update_data($table, $where, $data);
 
 
 
@@ -2646,17 +2563,17 @@ class Stripe_action extends Home
 
 			$where = array();
 
-			$where['where'] = array('id'=>$user_id);
+			$where['where'] = array('id' => $user_id);
 
-			$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-			$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-			if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -2666,11 +2583,11 @@ class Stripe_action extends Home
 
 				$subject = $payment_confirmation_email_template[0]['subject'];
 
-				$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2682,11 +2599,11 @@ class Stripe_action extends Home
 
 				$subject = "Payment Confirmation";
 
-				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2694,13 +2611,13 @@ class Stripe_action extends Home
 
 
 
-	        // new payment made email
+			// new payment made email
 
-			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-			if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -2708,11 +2625,11 @@ class Stripe_action extends Home
 
 				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-				$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -2726,25 +2643,25 @@ class Stripe_action extends Home
 
 				$message = "New payment has been made by {$user_email[0]['name']}";
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 			}
 
 
 
-	        // affiliate Section
+			// affiliate Section
 
-			if($this->addon_exist('affiliate_system')) {
+			if ($this->addon_exist('affiliate_system')) {
 
-				$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-				if($affiliate_id != 0) {
+				if ($affiliate_id != 0) {
 
-					$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 				}
 
@@ -2752,7 +2669,7 @@ class Stripe_action extends Home
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -2780,19 +2697,15 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=success";
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 			redirect($redirect_url, 'refresh');
 
-		}
-
-		else
-
-		{
+		} else {
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -2820,7 +2733,7 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
@@ -2831,7 +2744,6 @@ class Stripe_action extends Home
 
 
 	public function instamojo_action()
-
 	{
 
 		$package_id = $this->uri->segment(3);
@@ -2842,7 +2754,7 @@ class Stripe_action extends Home
 
 
 
-		$package_info = $this->basic->get_data('package',['where'=>['id'=>$package_id]],['package_name','price']);
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
 
 		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
@@ -2850,7 +2762,7 @@ class Stripe_action extends Home
 
 
 
-		$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['name','email','mobile']);
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
 
 		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
 
@@ -2862,11 +2774,11 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url_instamojo = base_url('stripe_action/instamojo_success/').$package_id.'/'.$user_id;
+		$redirect_url_instamojo = base_url('stripe_action/instamojo_success/') . $package_id . '/' . $user_id;
 
 		$this->load->library('instamojo');
 
-		$this->instamojo->purpose =$package_name;
+		$this->instamojo->purpose = $package_name;
 
 		$this->instamojo->amount = $payment_amount;
 
@@ -2893,7 +2805,6 @@ class Stripe_action extends Home
 
 
 	public function instamojo_success()
-
 	{
 
 		$package_id = $this->uri->segment(3);
@@ -2906,17 +2817,15 @@ class Stripe_action extends Home
 
 		$this->load->library('instamojo');
 
-		$this->instamojo->payment_id =$payment_id;
+		$this->instamojo->payment_id = $payment_id;
 
-		$this->instamojo->payment_request_id =$payment_request_id;
+		$this->instamojo->payment_request_id = $payment_request_id;
 
 		$response = $this->instamojo->success_action();
 
 
 
-		if(isset($response['success']) && $response['success'] == 1)
-
-		{
+		if (isset($response['success']) && $response['success'] == 1) {
 
 			// $user_id = $this->user_id;
 
@@ -2928,30 +2837,30 @@ class Stripe_action extends Home
 
 
 
-			$simple_where['where'] = array('user_id'=>$user_id);
+			$simple_where['where'] = array('user_id' => $user_id);
 
-			$select = array('cycle_start_date','cycle_expired_date');
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-			$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-			$prev_cycle_expired_date="";
 
-			$price=0;
+
+			$prev_cycle_expired_date = "";
+
+			$price = 0;
 
 			$cycle_start_date = "";
-    		$cycle_expired_date = "";
+			$cycle_expired_date = "";
 
-			$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-			if(is_array($package_data) && array_key_exists(0, $package_data))
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-				$price=$package_data[0]["price"];
+				$price = $package_data[0]["price"];
 
-			$validity=$package_data[0]["validity"];
+			$validity = $package_data[0]["validity"];
 
 
 
@@ -2959,43 +2868,35 @@ class Stripe_action extends Home
 
 
 
-			$validity_str='+'.$validity.' day';
+			$validity_str = '+' . $validity . ' day';
 
 
 
-			foreach($prev_payment_info as $info){
+			foreach ($prev_payment_info as $info) {
 
-				$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-			}
-
-
-
-			if($prev_cycle_expired_date==""){
-
-				$cycle_start_date=date('Y-m-d');
-
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 			}
 
 
 
-			else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+			if ($prev_cycle_expired_date == "") {
 
-				$cycle_start_date=date('Y-m-d');
+				$cycle_start_date = date('Y-m-d');
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			}
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-				$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 			}
 
@@ -3003,9 +2904,9 @@ class Stripe_action extends Home
 
 			/** insert the transaction into database ***/
 
-			$receiver_email=$this->session->userdata('user_login_email');
+			$receiver_email = $this->session->userdata('user_login_email');
 
-			$country="";
+			$country = "";
 
 			$payment_date = date('Y-m-d H:i:s');
 
@@ -3013,35 +2914,35 @@ class Stripe_action extends Home
 
 
 
-			$insert_data=array(
+			$insert_data = array(
 
-				"verify_status"     =>"",
+				"verify_status" => "",
 
-				"first_name"        =>"",
+				"first_name" => "",
 
-				"last_name"         =>"",
+				"last_name" => "",
 
-				"paypal_email"      =>"",
+				"paypal_email" => "",
 
-				"receiver_email"    =>$receiver_email,
+				"receiver_email" => $receiver_email,
 
-				"country"           =>$country,
+				"country" => $country,
 
-				"payment_date"      =>$payment_date,
+				"payment_date" => $payment_date,
 
-				"payment_type"      =>'Instamojo',
+				"payment_type" => 'Instamojo',
 
-				"transaction_id"    =>$transaction_id,
+				"transaction_id" => $transaction_id,
 
-				"user_id"           =>$user_id,
+				"user_id" => $user_id,
 
-				"package_id"        =>$package_id,
+				"package_id" => $package_id,
 
-				"cycle_start_date"  =>$cycle_start_date,
+				"cycle_start_date" => $cycle_start_date,
 
-				"cycle_expired_date"=>$cycle_expired_date,
+				"cycle_expired_date" => $cycle_expired_date,
 
-				"paid_amount"       =>$payment_amount
+				"paid_amount" => $payment_amount
 
 			);
 
@@ -3051,19 +2952,19 @@ class Stripe_action extends Home
 
 			$this->basic->insert_data('transaction_history', $insert_data);
 
-			$this->session->set_userdata("payment_success",1);
+			$this->session->set_userdata("payment_success", 1);
 
 
 
 			/** Update user table **/
 
-			$table='users';
+			$table = 'users';
 
-			$where=array('id'=>$user_id);
+			$where = array('id' => $user_id);
 
-			$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-			$this->basic->update_data($table,$where,$data);
+			$this->basic->update_data($table, $where, $data);
 
 
 
@@ -3077,17 +2978,17 @@ class Stripe_action extends Home
 
 			$where = array();
 
-			$where['where'] = array('id'=>$user_id);
+			$where['where'] = array('id' => $user_id);
 
-			$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-			$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-			if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -3097,11 +2998,11 @@ class Stripe_action extends Home
 
 				$subject = $payment_confirmation_email_template[0]['subject'];
 
-				$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3113,11 +3014,11 @@ class Stripe_action extends Home
 
 				$subject = "Payment Confirmation";
 
-				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3125,13 +3026,13 @@ class Stripe_action extends Home
 
 
 
-	        // new payment made email
+			// new payment made email
 
-			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-			if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -3139,11 +3040,11 @@ class Stripe_action extends Home
 
 				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-				$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3157,25 +3058,25 @@ class Stripe_action extends Home
 
 				$message = "New payment has been made by {$user_email[0]['name']}";
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 			}
 
 
 
-	        // affiliate Section
+			// affiliate Section
 
-			if($this->addon_exist('affiliate_system')) {
+			if ($this->addon_exist('affiliate_system')) {
 
-				$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-				if($affiliate_id != 0) {
+				if ($affiliate_id != 0) {
 
-					$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 				}
 
@@ -3183,7 +3084,7 @@ class Stripe_action extends Home
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -3211,19 +3112,15 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=success";
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 			redirect($redirect_url, 'refresh');
 
-		}
-
-		else
-
-		{
+		} else {
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -3251,7 +3148,7 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
@@ -3262,7 +3159,6 @@ class Stripe_action extends Home
 
 
 	public function toyyibpay_action()
-
 	{
 
 		$package_id = $this->uri->segment(3);
@@ -3273,7 +3169,7 @@ class Stripe_action extends Home
 
 
 
-		$package_info = $this->basic->get_data('package',['where'=>['id'=>$package_id]],['package_name','price']);
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
 
 		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
@@ -3281,7 +3177,7 @@ class Stripe_action extends Home
 
 
 
-		$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['name','email','mobile']);
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
 
 		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
 
@@ -3293,11 +3189,11 @@ class Stripe_action extends Home
 
 
 
-		$redirect_url_toyyibpay = base_url('stripe_action/toyyibpay_success/').$package_id.'/'.$user_id;
+		$redirect_url_toyyibpay = base_url('stripe_action/toyyibpay_success/') . $package_id . '/' . $user_id;
 
 		$this->load->library('toyyibpay');
 
-		$this->toyyibpay->purpose =$package_name;
+		$this->toyyibpay->purpose = $package_name;
 
 		$this->toyyibpay->amount = $payment_amount;
 
@@ -3318,7 +3214,6 @@ class Stripe_action extends Home
 
 
 	public function toyyibpay_success()
-
 	{
 
 
@@ -3341,9 +3236,7 @@ class Stripe_action extends Home
 
 		$status_id = $second_response['status_id'];
 
-		if($status_id == 1 || $status_id == 2)
-
-		{
+		if ($status_id == 1 || $status_id == 2) {
 
 			$package_id = $this->uri->segment(3);
 
@@ -3353,30 +3246,30 @@ class Stripe_action extends Home
 
 			$package_id = $package_id;
 
-			$simple_where['where'] = array('user_id'=>$user_id);
+			$simple_where['where'] = array('user_id' => $user_id);
 
-			$select = array('cycle_start_date','cycle_expired_date');
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-			$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-			$prev_cycle_expired_date="";
 
-			$price=0;
+
+			$prev_cycle_expired_date = "";
+
+			$price = 0;
 
 			$cycle_start_date = "";
-    		$cycle_expired_date = "";
+			$cycle_expired_date = "";
 
-			$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-			if(is_array($package_data) && array_key_exists(0, $package_data))
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-				$price=$package_data[0]["price"];
+				$price = $package_data[0]["price"];
 
-			$validity=$package_data[0]["validity"];
+			$validity = $package_data[0]["validity"];
 
 
 
@@ -3384,43 +3277,35 @@ class Stripe_action extends Home
 
 
 
-			$validity_str='+'.$validity.' day';
+			$validity_str = '+' . $validity . ' day';
 
 
 
-			foreach($prev_payment_info as $info){
+			foreach ($prev_payment_info as $info) {
 
-				$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-			}
-
-
-
-			if($prev_cycle_expired_date==""){
-
-				$cycle_start_date=date('Y-m-d');
-
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 			}
 
 
 
-			else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+			if ($prev_cycle_expired_date == "") {
 
-				$cycle_start_date=date('Y-m-d');
+				$cycle_start_date = date('Y-m-d');
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			}
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-				$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 			}
 
@@ -3428,9 +3313,9 @@ class Stripe_action extends Home
 
 			/** insert the transaction into database ***/
 
-			$receiver_email=$this->session->userdata('user_login_email');
+			$receiver_email = $this->session->userdata('user_login_email');
 
-			$country="";
+			$country = "";
 
 			$payment_date = date('Y-m-d H:i:s');
 
@@ -3438,35 +3323,35 @@ class Stripe_action extends Home
 
 
 
-			$insert_data=array(
+			$insert_data = array(
 
-				"verify_status"     =>"",
+				"verify_status" => "",
 
-				"first_name"        =>"",
+				"first_name" => "",
 
-				"last_name"         =>"",
+				"last_name" => "",
 
-				"paypal_email"      =>"",
+				"paypal_email" => "",
 
-				"receiver_email"    =>$receiver_email,
+				"receiver_email" => $receiver_email,
 
-				"country"           =>$country,
+				"country" => $country,
 
-				"payment_date"      =>$payment_date,
+				"payment_date" => $payment_date,
 
-				"payment_type"      =>'Toyyibpay',
+				"payment_type" => 'Toyyibpay',
 
-				"transaction_id"    =>$transaction_id,
+				"transaction_id" => $transaction_id,
 
-				"user_id"           =>$user_id,
+				"user_id" => $user_id,
 
-				"package_id"        =>$package_id,
+				"package_id" => $package_id,
 
-				"cycle_start_date"  =>$cycle_start_date,
+				"cycle_start_date" => $cycle_start_date,
 
-				"cycle_expired_date"=>$cycle_expired_date,
+				"cycle_expired_date" => $cycle_expired_date,
 
-				"paid_amount"       =>$payment_amount
+				"paid_amount" => $payment_amount
 
 			);
 
@@ -3476,19 +3361,19 @@ class Stripe_action extends Home
 
 			$this->basic->insert_data('transaction_history', $insert_data);
 
-			$this->session->set_userdata("payment_success",1);
+			$this->session->set_userdata("payment_success", 1);
 
 
 
 			/** Update user table **/
 
-			$table='users';
+			$table = 'users';
 
-			$where=array('id'=>$user_id);
+			$where = array('id' => $user_id);
 
-			$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-			$this->basic->update_data($table,$where,$data);
+			$this->basic->update_data($table, $where, $data);
 
 
 
@@ -3502,17 +3387,17 @@ class Stripe_action extends Home
 
 			$where = array();
 
-			$where['where'] = array('id'=>$user_id);
+			$where['where'] = array('id' => $user_id);
 
-			$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-			$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-			if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -3522,11 +3407,11 @@ class Stripe_action extends Home
 
 				$subject = $payment_confirmation_email_template[0]['subject'];
 
-				$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3538,11 +3423,11 @@ class Stripe_action extends Home
 
 				$subject = "Payment Confirmation";
 
-				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3550,13 +3435,13 @@ class Stripe_action extends Home
 
 
 
-	        // new payment made email
+			// new payment made email
 
-			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-			if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -3564,11 +3449,11 @@ class Stripe_action extends Home
 
 				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-				$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3582,15 +3467,15 @@ class Stripe_action extends Home
 
 				$message = "New payment has been made by {$user_email[0]['name']}";
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 			}
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -3618,17 +3503,13 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=success";
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 			redirect($redirect_url, 'refresh');
 
-		}
+		} else {
 
-		else
-
-		{
-
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -3656,7 +3537,7 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
@@ -3669,7 +3550,6 @@ class Stripe_action extends Home
 
 
 	public function paymaya_action()
-
 	{
 
 		$package_id = $this->uri->segment(3);
@@ -3680,13 +3560,13 @@ class Stripe_action extends Home
 
 
 
-		$package_info = $this->basic->get_data('package',['where'=>['id'=>$package_id]],['package_name','price']);
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
 
 		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
 		$package_name = isset($package_info[0]['package_name']) ? $package_info[0]['package_name'] : '';
 
-		$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['name','email','mobile']);
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
 
 		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
 
@@ -3698,15 +3578,15 @@ class Stripe_action extends Home
 
 
 
-		$success_url_paymaya = base_url('stripe_action/paymaya_success/').$package_id.'/'.$user_id;
+		$success_url_paymaya = base_url('stripe_action/paymaya_success/') . $package_id . '/' . $user_id;
 
-		$failure_url_paymaya = base_url('stripe_action/paymaya_success/').$package_id.'/'.$user_id;
+		$failure_url_paymaya = base_url('stripe_action/paymaya_success/') . $package_id . '/' . $user_id;
 
-		$cancel_url_paymaya = base_url('stripe_action/paymaya_success/').$package_id.'/'.$user_id;
+		$cancel_url_paymaya = base_url('stripe_action/paymaya_success/') . $package_id . '/' . $user_id;
 
 		$this->load->library('paymaya');
 
-		$this->paymaya->purpose =$package_name;
+		$this->paymaya->purpose = $package_name;
 
 		$this->paymaya->amount = $payment_amount;
 
@@ -3724,25 +3604,290 @@ class Stripe_action extends Home
 
 		$this->paymaya->button_lang = $this->lang->line('Pay with Paymaya');
 
-	    $response = $this->paymaya->checkout_url();
+		$response = $this->paymaya->checkout_url();
 
-	    $checkout_id =  $response['checkoutId'];
+		$checkout_id = $response['checkoutId'];
 
-	    $checkout_url = $response['redirectUrl'];
+		$checkout_url = $response['redirectUrl'];
 
-	    $this->session->set_userdata('paymaya_checkoutId',$checkout_id);
+		$this->session->set_userdata('paymaya_checkoutId', $checkout_id);
 
-	    // $this->session->userdata('paymaya_checkoutId');
+		// $this->session->userdata('paymaya_checkoutId');
 
-	    header('Location:'.$checkout_url);
+		header('Location:' . $checkout_url);
 
 
 
 	}
 
 
+	public function meps_action()
+	{
 
-	public function paymaya_success(){
+		$package_id = $this->uri->segment(3);
+
+		$user_id = $this->uri->segment(4);
+
+
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
+
+		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
+
+		$package_name = isset($package_info[0]['package_name']) ? $package_info[0]['package_name'] : '';
+
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
+
+		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
+
+		$user_email = isset($user_info[0]['email']) ? $user_info[0]['email'] : '';
+
+		$user_mobile = isset($user_info[0]['mobile']) ? $user_info[0]['mobile'] : '';
+
+		$cart_id = uniqid('cart_');
+
+
+		$callback = "";
+
+		$return = base_url('stripe_action/meps_success/') . $package_id . '/' . $user_id . '/' . $cart_id;
+
+
+
+		$url = "https://secure-jordan.paytabs.com/payment/request";
+
+		$where['where'] = array('deleted' => '0');
+
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
+
+		$meps_public_key = isset($payment_config[0]['meps_public_key']) ? $payment_config[0]['meps_public_key'] : '';
+		$meps_profile_id = isset($payment_config[0]['meps_profile_id']) ? $payment_config[0]['meps_profile_id'] : '';
+
+
+
+
+		$data = array(
+			"profile_id" => $meps_profile_id,
+			"tran_type" => "sale",
+			"tran_class" => "ecom",
+			"cart_id" => $cart_id,
+			"cart_description" => $package_name,
+			"cart_currency" => "JOD",
+			"cart_amount" => $payment_amount,
+			"callback" => $callback,
+			"return" => $return,
+			"hide_shipping" => true,
+			"customer_details" => array(
+				"name" => $user_name,
+				"email" => $user_email,
+				"phone" => $user_mobile,
+			)
+		);
+		$data_json = json_encode($data);
+
+		$ch = curl_init($url);
+
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array(
+				'Content-Type: application/json',
+				'authorization: ' . $meps_public_key
+			)
+		);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$response = curl_exec($ch);
+
+
+		$ar = json_decode($response, true);
+
+		var_dump($ar);
+
+
+		$this->db->insert('meps_payment_tracking', [
+			'cart_id' => $cart_id,
+			'user_id' => $user_id,
+			'package_id' => $package_id,
+			'tran_ref' => $ar['tran_ref'],
+		]);
+		header('Location:' . $ar['redirect_url']);
+
+		// exit;
+
+
+	}
+
+
+	public function meps_success()
+	{
+		
+		$package_id = $this->uri->segment(3);
+		$user_id = $this->uri->segment(4);
+		$cart_id = $this->uri->segment(5);
+
+
+		
+
+		$tracking = $this->db->get_where('meps_payment_tracking', ['cart_id' => $cart_id])->row();
+		if (!$tracking) {
+			show_error("بيانات الدفع غير موجودة.");
+		}
+
+		$tran_ref = $tracking->tran_ref;
+
+		$where['where'] = array('deleted' => '0');
+		$payment_config = $this->basic->get_data('payment_config', $where, $select = '');
+		$meps_public_key = isset($payment_config[0]['meps_public_key']) ? $payment_config[0]['meps_public_key'] : '';
+		$meps_profile_id = isset($payment_config[0]['meps_profile_id']) ? $payment_config[0]['meps_profile_id'] : '';
+
+		$ch = curl_init();
+		$data = [
+			"profile_id" => $meps_profile_id,
+			"tran_ref" => $tran_ref,
+		];
+		curl_setopt($ch, CURLOPT_URL, "https://secure-jordan.paytabs.com/payment/query");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			"authorization: " . $meps_public_key,
+			"content-type: application/json"
+		]);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+		$response = curl_exec($ch);
+		$response = json_decode($response, true);
+		curl_close($ch);
+
+		if (isset($response['payment_result']['response_message']) && $response['payment_result']['response_message'] === 'Authorised') {
+
+			$transaction_id = $tran_ref;
+			$payment_date = date('Y-m-d H:i:s');
+			$receiver_email = $response['customer_details']['email'] ?? $this->session->userdata('user_login_email');
+			$name = $response['customer_details']['name'] ?? '';
+			$country = "";
+
+			$package_data = $this->basic->get_data("package", ["where" => ["id" => $package_id]]);
+			$price = $package_data[0]["price"] ?? 0;
+			$validity = $package_data[0]["validity"] ?? 30;
+			$validity_str = '+' . $validity . ' day';
+
+			$prev_payment_info = $this->basic->get_data('transaction_history', ['where' => ['user_id' => $user_id]], ['cycle_start_date', 'cycle_expired_date'], '', 1, 0, 'ID DESC');
+			$prev_cycle_expired_date = $prev_payment_info[0]['cycle_expired_date'] ?? "";
+
+			if ($prev_cycle_expired_date == "" || strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
+				$cycle_start_date = date('Y-m-d');
+			} else {
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
+			}
+
+			$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
+
+			$insert_data = [
+				"verify_status" => "",
+				"first_name" => $name,
+				"last_name" => $name,
+				"paypal_email" => "",
+				"receiver_email" => $receiver_email,
+				"country" => $country,
+				"payment_date" => $payment_date,
+				"payment_type" => 'meps',
+				"transaction_id" => $transaction_id,
+				"user_id" => $user_id,
+				"package_id" => $package_id,
+				"cycle_start_date" => $cycle_start_date,
+				"cycle_expired_date" => $cycle_expired_date,
+				"paid_amount" => $price
+			];
+
+			$this->basic->insert_data('transaction_history', $insert_data);
+
+			$this->basic->update_data('users', ['id' => $user_id], [
+				'expired_date' => $cycle_expired_date,
+				'package_id' => $package_id,
+				'bot_status' => '1'
+			]);
+
+			$this->session->set_userdata("payment_success", 1);
+
+
+			$product_short_name = $this->config->item('product_short_name');
+			$from = $this->config->item('institute_email');
+			$mask = $this->config->item('product_name');
+			$where = array('id' => $user_id);
+			$user_email = $this->basic->get_data('users', ['where' => $where]);
+
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", ['where' => ['template_type' => 'stripe_payment']], ['subject', 'message']);
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+				$to = $user_email[0]['email'];
+				$url = base_url();
+				$subject = $payment_confirmation_email_template[0]['subject'];
+				$message = str_replace(['#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'], [$product_short_name, $product_short_name, $cycle_expired_date, $url, $mask], $payment_confirmation_email_template[0]['message']);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
+			} else {
+				$to = $user_email[0]['email'];
+				$subject = "Payment Confirmation";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
+			}
+
+			$new_payment_admin_template = $this->basic->get_data("email_template_management", ['where' => ['template_type' => 'stripe_new_payment_made']], ['subject', 'message']);
+			if (isset($new_payment_admin_template[0]) && $new_payment_admin_template[0]['subject'] != '' && $new_payment_admin_template[0]['message'] != '') {
+				$to = $from;
+				$subject = $new_payment_admin_template[0]['subject'];
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $new_payment_admin_template[0]['message']);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
+			} else {
+				$to = $from;
+				$subject = "New Payment Made";
+				$message = "New payment has been made by {$user_email[0]['name']}";
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
+			}
+
+			if ($this->addon_exist('affiliate_system')) {
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
+				$affiliate_id = $get_affiliate_id[0]['affiliate_id'] ?? 0;
+				if ($affiliate_id != 0) {
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
+				}
+			}
+
+			// if ($this->config->item("auto_relogin_after_purchase") == '1') {
+				$this->session->unset_userdata('user_type');
+				$this->session->unset_userdata('logged_in');
+				$this->session->unset_userdata('username');
+				$this->session->unset_userdata('user_id');
+				$this->session->unset_userdata('download_id');
+				$this->session->unset_userdata('user_login_email');
+				$this->session->unset_userdata('expiry_date');
+				$this->session->unset_userdata('brand_logo');
+
+				$this->subscriber_login($user_id);
+			// }
+
+			redirect(base_url("/payment/transaction_log?action=success"), "refresh");
+		} else {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
+				$this->session->unset_userdata('user_type');
+				$this->session->unset_userdata('logged_in');
+				$this->session->unset_userdata('username');
+				$this->session->unset_userdata('user_id');
+				$this->session->unset_userdata('download_id');
+				$this->session->unset_userdata('user_login_email');
+				$this->session->unset_userdata('expiry_date');
+				$this->session->unset_userdata('brand_logo');
+
+				$this->subscriber_login($user_id);
+			}
+			redirect(base_url("/payment/transaction_log?action=cancel"), "refresh");
+		}
+	}
+
+
+
+
+	public function paymaya_success()
+	{
 
 
 
@@ -3758,9 +3903,7 @@ class Stripe_action extends Home
 
 		$response = $this->paymaya->get_checkoutid($paymaya_checkoutId);
 
-		if(isset($response['paymentStatus']) == "PAYMENT_SUCCESS")
-
-		{
+		if (isset($response['paymentStatus']) == "PAYMENT_SUCCESS") {
 
 			// $user_id = $this->user_id;
 
@@ -3768,36 +3911,36 @@ class Stripe_action extends Home
 
 			$package_id = $package_id;
 
-			
+
 
 			$transaction_id = isset($response['paymentDetails']['responses']['efs']['receipt']['transactionId']) ? $response['paymentDetails']['responses']['efs']['receipt']['transactionId'] : 0;
 
 
 
-			$simple_where['where'] = array('user_id'=>$user_id);
+			$simple_where['where'] = array('user_id' => $user_id);
 
-			$select = array('cycle_start_date','cycle_expired_date');
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-			$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
-
-
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
 
 
-			$prev_cycle_expired_date="";
 
-			$price=0;
+
+			$prev_cycle_expired_date = "";
+
+			$price = 0;
 
 			$cycle_start_date = "";
-    		$cycle_expired_date = "";
+			$cycle_expired_date = "";
 
-			$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-			if(is_array($package_data) && array_key_exists(0, $package_data))
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-				$price=$package_data[0]["price"];
+				$price = $package_data[0]["price"];
 
-			$validity=$package_data[0]["validity"];
+			$validity = $package_data[0]["validity"];
 
 
 
@@ -3805,43 +3948,35 @@ class Stripe_action extends Home
 
 
 
-			$validity_str='+'.$validity.' day';
+			$validity_str = '+' . $validity . ' day';
 
 
 
-			foreach($prev_payment_info as $info){
+			foreach ($prev_payment_info as $info) {
 
-				$prev_cycle_expired_date=$info['cycle_expired_date'];
-
-			}
-
-
-
-			if($prev_cycle_expired_date==""){
-
-				$cycle_start_date=date('Y-m-d');
-
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
 			}
 
 
 
-			else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+			if ($prev_cycle_expired_date == "") {
 
-				$cycle_start_date=date('Y-m-d');
+				$cycle_start_date = date('Y-m-d');
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			}
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-			else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-				$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-				$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
 			}
 
@@ -3849,9 +3984,9 @@ class Stripe_action extends Home
 
 			/** insert the transaction into database ***/
 
-			$receiver_email=$this->session->userdata('user_login_email');
+			$receiver_email = $this->session->userdata('user_login_email');
 
-			$country="";
+			$country = "";
 
 			$payment_date = date('Y-m-d H:i:s');
 
@@ -3859,35 +3994,35 @@ class Stripe_action extends Home
 
 
 
-			$insert_data=array(
+			$insert_data = array(
 
-				"verify_status"     =>"",
+				"verify_status" => "",
 
-				"first_name"        =>$response['buyer']['firstName'],
+				"first_name" => $response['buyer']['firstName'],
 
-				"last_name"         =>$response['buyer']['lastName'],
+				"last_name" => $response['buyer']['lastName'],
 
-				"paypal_email"      =>"",
+				"paypal_email" => "",
 
-				"receiver_email"    =>$receiver_email,
+				"receiver_email" => $receiver_email,
 
-				"country"           =>$country,
+				"country" => $country,
 
-				"payment_date"      =>$payment_date,
+				"payment_date" => $payment_date,
 
-				"payment_type"      =>'paymaya',
+				"payment_type" => 'paymaya',
 
-				"transaction_id"    =>$transaction_id,
+				"transaction_id" => $transaction_id,
 
-				"user_id"           =>$user_id,
+				"user_id" => $user_id,
 
-				"package_id"        =>$package_id,
+				"package_id" => $package_id,
 
-				"cycle_start_date"  =>$cycle_start_date,
+				"cycle_start_date" => $cycle_start_date,
 
-				"cycle_expired_date"=>$cycle_expired_date,
+				"cycle_expired_date" => $cycle_expired_date,
 
-				"paid_amount"       =>$payment_amount
+				"paid_amount" => $payment_amount
 
 			);
 
@@ -3897,19 +4032,19 @@ class Stripe_action extends Home
 
 			$this->basic->insert_data('transaction_history', $insert_data);
 
-			$this->session->set_userdata("payment_success",1);
+			$this->session->set_userdata("payment_success", 1);
 
 
 
 			/** Update user table **/
 
-			$table='users';
+			$table = 'users';
 
-			$where=array('id'=>$user_id);
+			$where = array('id' => $user_id);
 
-			$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-			$this->basic->update_data($table,$where,$data);
+			$this->basic->update_data($table, $where, $data);
 
 
 
@@ -3923,17 +4058,17 @@ class Stripe_action extends Home
 
 			$where = array();
 
-			$where['where'] = array('id'=>$user_id);
+			$where['where'] = array('id' => $user_id);
 
-			$user_email = $this->basic->get_data('users',$where,$select='');
-
-
-
-			$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
 
-			if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
+
+
+
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
 
 
@@ -3943,11 +4078,11 @@ class Stripe_action extends Home
 
 				$subject = $payment_confirmation_email_template[0]['subject'];
 
-				$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3959,11 +4094,11 @@ class Stripe_action extends Home
 
 				$subject = "Payment Confirmation";
 
-				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
-	                //send mail to user
+				//send mail to user
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -3971,13 +4106,13 @@ class Stripe_action extends Home
 
 
 
-	        // new payment made email
+			// new payment made email
 
-			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
 
 
-			if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
 
@@ -3985,11 +4120,11 @@ class Stripe_action extends Home
 
 				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-				$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
@@ -4003,25 +4138,25 @@ class Stripe_action extends Home
 
 				$message = "New payment has been made by {$user_email[0]['name']}";
 
-	                //send mail to admin
+				//send mail to admin
 
-				$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 			}
 
 
 
-	        // affiliate Section
+			// affiliate Section
 
-			if($this->addon_exist('affiliate_system')) {
+			if ($this->addon_exist('affiliate_system')) {
 
-				$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-				if($affiliate_id != 0) {
+				if ($affiliate_id != 0) {
 
-					$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
 				}
 
@@ -4029,7 +4164,7 @@ class Stripe_action extends Home
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -4057,19 +4192,15 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=success";
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
 			redirect($redirect_url, 'refresh');
 
-		}
-
-		else
-
-		{
+		} else {
 
 
 
-			if($this->config->item("auto_relogin_after_purchase") == '1') {
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
 
 
@@ -4097,7 +4228,7 @@ class Stripe_action extends Home
 
 
 
-			$redirect_url=base_url()."payment/transaction_log?action=cancel";
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
 			redirect($redirect_url, 'refresh');
 
@@ -4114,7 +4245,6 @@ class Stripe_action extends Home
 
 
 	public function myfatoorah_action()
-
 	{
 
 		$package_id = $this->uri->segment(3);
@@ -4125,7 +4255,7 @@ class Stripe_action extends Home
 
 
 
-		$package_info = $this->basic->get_data('package',['where'=>['id'=>$package_id]],['package_name','price']);
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
 
 		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
@@ -4133,7 +4263,7 @@ class Stripe_action extends Home
 
 
 
-		$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['name','email','mobile']);
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
 
 		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
 
@@ -4145,841 +4275,809 @@ class Stripe_action extends Home
 
 
 
-    	$redirect_url_myfatoorah = base_url('stripe_action/myfatoorah_success/').$package_id.'/'.$user_id; // here need to set the actual redirect url not demo
+		$redirect_url_myfatoorah = base_url('stripe_action/myfatoorah_success/') . $package_id . '/' . $user_id; // here need to set the actual redirect url not demo
 
-    	$this->load->library('myfatoorah');
+		$this->load->library('myfatoorah');
 
-    	$this->myfatoorah->purpose =$package_name;
+		$this->myfatoorah->purpose = $package_name;
 
-    	$this->myfatoorah->amount = $payment_amount;
+		$this->myfatoorah->amount = $payment_amount;
 
-    	$this->myfatoorah->callbackurl = $redirect_url_myfatoorah;
+		$this->myfatoorah->callbackurl = $redirect_url_myfatoorah;
 
-    	$this->myfatoorah->errorUrl = $redirect_url_myfatoorah;
+		$this->myfatoorah->errorUrl = $redirect_url_myfatoorah;
 
-    	$this->myfatoorah->buyer_name = $user_name;
+		$this->myfatoorah->buyer_name = $user_name;
 
-    	$this->myfatoorah->email = $user_email;
+		$this->myfatoorah->email = $user_email;
 
-    	$this->myfatoorah->phone = $user_mobile;
+		$this->myfatoorah->phone = $user_mobile;
 
-    	$this->myfatoorah->button_lang = $this->lang->line('Pay With myfatoorah');
+		$this->myfatoorah->button_lang = $this->lang->line('Pay With myfatoorah');
 
-    	$this->myfatoorah->get_long_url();
+		$this->myfatoorah->get_long_url();
 
-    }
+	}
 
 
 
 
 
-    public function myfatoorah_success()
+	public function myfatoorah_success()
+	{
 
-    {
+		$package_id = $this->uri->segment(3);
 
-    	$package_id = $this->uri->segment(3);
+		$user_id = $this->uri->segment(4);
 
-    	$user_id = $this->uri->segment(4);
 
 
+		$payment_id = $_GET['paymentId'];
 
-    	$payment_id = $_GET['paymentId'];
+		$this->load->library('myfatoorah');
 
-    	$this->load->library('myfatoorah');
+		$this->myfatoorah->payment_id = $payment_id;
 
-    	$this->myfatoorah->payment_id =$payment_id;
+		$response = $this->myfatoorah->success_action();
 
-    	$response = $this->myfatoorah->success_action();
 
 
+		if (isset($response['Data']['InvoiceStatus']) && $response['Data']['InvoiceStatus'] == "Paid") {
 
-    	if(isset($response['Data']['InvoiceStatus']) && $response['Data']['InvoiceStatus'] == "Paid")
+			// $user_id = $this->user_id;
 
-    	{
+			$user_id = $user_id;
 
-    		// $user_id = $this->user_id;
+			$package_id = $package_id;
 
-    		$user_id = $user_id;
+			$transaction_id = isset($response['Data']['InvoiceTransactions'][0]['TransactionId']) ? $response['Data']['InvoiceTransactions'][0]['TransactionId'] : 0;
 
-    		$package_id = $package_id;
 
-    		$transaction_id = isset($response['Data']['InvoiceTransactions'][0]['TransactionId']) ? $response['Data']['InvoiceTransactions'][0]['TransactionId'] : 0;
 
+			$simple_where['where'] = array('user_id' => $user_id);
 
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-    		$simple_where['where'] = array('user_id'=>$user_id);
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
-    		$select = array('cycle_start_date','cycle_expired_date');
 
-    		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
 
 
 
+			$prev_cycle_expired_date = "";
 
+			$price = 0;
 
-    		$prev_cycle_expired_date="";
+			$cycle_start_date = "";
+			$cycle_expired_date = "";
 
-    		$price=0;
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
-    		$cycle_start_date = "";
-    		$cycle_expired_date = "";
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-    		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+				$price = $package_data[0]["price"];
 
-    		if(is_array($package_data) && array_key_exists(0, $package_data))
+			$validity = $package_data[0]["validity"];
 
-    			$price=$package_data[0]["price"];
 
-    		$validity=$package_data[0]["validity"];
 
+			$payment_amount = isset($package_data[0]['price']) ? $package_data[0]['price'] : 0;
 
 
-    		$payment_amount = isset($package_data[0]['price']) ? $package_data[0]['price'] : 0;
 
+			$validity_str = '+' . $validity . ' day';
 
 
-    		$validity_str='+'.$validity.' day';
 
+			foreach ($prev_payment_info as $info) {
 
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
-    		foreach($prev_payment_info as $info){
+			}
 
-    			$prev_cycle_expired_date=$info['cycle_expired_date'];
 
-    		}
 
+			if ($prev_cycle_expired_date == "") {
 
+				$cycle_start_date = date('Y-m-d');
 
-    		if($prev_cycle_expired_date==""){
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-    			$cycle_start_date=date('Y-m-d');
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				$cycle_start_date = date('Y-m-d');
 
-    		}
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-    		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-    			$cycle_start_date=date('Y-m-d');
+			}
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
 
-    		}
 
+			/** insert the transaction into database ***/
 
+			$receiver_email = $this->session->userdata('user_login_email');
 
-    		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+			$country = "";
 
-    			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+			$payment_date = date('Y-m-d H:i:s');
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
 
-    		}
 
 
 
-    		/** insert the transaction into database ***/
+			$insert_data = array(
 
-    		$receiver_email=$this->session->userdata('user_login_email');
+				"verify_status" => "",
 
-    		$country="";
+				"first_name" => "",
 
-    		$payment_date = date('Y-m-d H:i:s');
+				"last_name" => "",
 
+				"paypal_email" => "",
 
+				"receiver_email" => $receiver_email,
 
+				"country" => $country,
 
+				"payment_date" => $payment_date,
 
-    		$insert_data=array(
+				"payment_type" => 'myfatoorah',
 
-    			"verify_status"     =>"",
+				"transaction_id" => $transaction_id,
 
-    			"first_name"        =>"",
+				"user_id" => $user_id,
 
-    			"last_name"         =>"",
+				"package_id" => $package_id,
 
-    			"paypal_email"      =>"",
+				"cycle_start_date" => $cycle_start_date,
 
-    			"receiver_email"    =>$receiver_email,
+				"cycle_expired_date" => $cycle_expired_date,
 
-    			"country"           =>$country,
+				"paid_amount" => $payment_amount
 
-    			"payment_date"      =>$payment_date,
+			);
 
-    			"payment_type"      =>'myfatoorah',
 
-    			"transaction_id"    =>$transaction_id,
 
-    			"user_id"           =>$user_id,
 
-    			"package_id"        =>$package_id,
 
-    			"cycle_start_date"  =>$cycle_start_date,
+			$this->basic->insert_data('transaction_history', $insert_data);
 
-    			"cycle_expired_date"=>$cycle_expired_date,
+			$this->session->set_userdata("payment_success", 1);
 
-    			"paid_amount"       =>$payment_amount
 
-    		);
 
+			/** Update user table **/
 
+			$table = 'users';
 
+			$where = array('id' => $user_id);
 
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-    		$this->basic->insert_data('transaction_history', $insert_data);
+			$this->basic->update_data($table, $where, $data);
 
-    		$this->session->set_userdata("payment_success",1);
 
 
+			$product_short_name = $this->config->item('product_short_name');
 
-    		/** Update user table **/
+			$from = $this->config->item('institute_email');
 
-    		$table='users';
+			$mask = $this->config->item('product_name');
 
-    		$where=array('id'=>$user_id);
+			$subject = "Payment Confirmation";
 
-    		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
+			$where = array();
 
-    		$this->basic->update_data($table,$where,$data);
+			$where['where'] = array('id' => $user_id);
 
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
 
-    		$product_short_name = $this->config->item('product_short_name');
 
-    		$from = $this->config->item('institute_email');
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
 
-    		$mask = $this->config->item('product_name');
 
-    		$subject = "Payment Confirmation";
 
-    		$where = array();
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
-    		$where['where'] = array('id'=>$user_id);
 
-    		$user_email = $this->basic->get_data('users',$where,$select='');
 
+				$to = $user_email[0]['email'];
 
+				$url = base_url();
 
-    		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+				$subject = $payment_confirmation_email_template[0]['subject'];
 
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
+				//send mail to user
 
-    		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
-    			$to = $user_email[0]['email'];
+			} else {
 
-    			$url = base_url();
 
-    			$subject = $payment_confirmation_email_template[0]['subject'];
 
-    			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+				$to = $user_email[0]['email'];
 
-	                //send mail to user
+				$subject = "Payment Confirmation";
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
+				//send mail to user
 
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    		} else {
 
 
+			}
 
-    			$to = $user_email[0]['email'];
 
-    			$subject = "Payment Confirmation";
 
-    			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+			// new payment made email
 
-	                //send mail to user
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
 
 
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
-    		}
 
 
+				$to = $from;
 
-	        // new payment made email
+				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-    		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
+				//send mail to admin
 
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
 
+			} else {
 
-    			$to = $from;
 
-    			$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-    			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$to = $from;
 
-	                //send mail to admin
+				$subject = "New Payment Made";
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$message = "New payment has been made by {$user_email[0]['name']}";
 
+				//send mail to admin
 
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    		} else {
+			}
 
 
 
-    			$to = $from;
+			// affiliate Section
 
-    			$subject = "New Payment Made";
+			if ($this->addon_exist('affiliate_system')) {
 
-    			$message = "New payment has been made by {$user_email[0]['name']}";
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-	                //send mail to admin
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				if ($affiliate_id != 0) {
 
-    		}
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
+				}
 
+			}
 
-	        // affiliate Section
 
-    		if($this->addon_exist('affiliate_system')) {
 
-    			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
-    			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
 
-    			if($affiliate_id != 0) {
 
-    				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->session->unset_userdata('user_type');
 
-    			}
+				$this->session->unset_userdata('logged_in');
 
-    		}
+				$this->session->unset_userdata('username');
 
+				$this->session->unset_userdata('user_id');
 
+				$this->session->unset_userdata('download_id');
 
-    		if($this->config->item("auto_relogin_after_purchase") == '1') {
+				$this->session->unset_userdata('user_login_email');
 
+				$this->session->unset_userdata('expiry_date');
 
+				$this->session->unset_userdata('brand_logo');
 
-    			$this->session->unset_userdata('user_type');
 
-    			$this->session->unset_userdata('logged_in');
 
-    			$this->session->unset_userdata('username');
+				$this->subscriber_login($user_id);
 
-    			$this->session->unset_userdata('user_id');
+			}
 
-    			$this->session->unset_userdata('download_id');
 
-    			$this->session->unset_userdata('user_login_email');
 
-    			$this->session->unset_userdata('expiry_date');
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
-    			$this->session->unset_userdata('brand_logo');
+			redirect($redirect_url, 'refresh');
 
 
 
-    			$this->subscriber_login($user_id);
+		} else {
 
-    		}
 
-    		
 
-    		$redirect_url=base_url()."payment/transaction_log?action=success";
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
-    		redirect($redirect_url, 'refresh');
 
 
+				$this->session->unset_userdata('user_type');
 
-    	}
+				$this->session->unset_userdata('logged_in');
 
-    	else
+				$this->session->unset_userdata('username');
 
-    	{
+				$this->session->unset_userdata('user_id');
 
+				$this->session->unset_userdata('download_id');
 
+				$this->session->unset_userdata('user_login_email');
 
-    		if($this->config->item("auto_relogin_after_purchase") == '1') {
+				$this->session->unset_userdata('expiry_date');
 
+				$this->session->unset_userdata('brand_logo');
 
 
-    			$this->session->unset_userdata('user_type');
 
-    			$this->session->unset_userdata('logged_in');
+				$this->subscriber_login($user_id);
 
-    			$this->session->unset_userdata('username');
+			}
 
-    			$this->session->unset_userdata('user_id');
 
-    			$this->session->unset_userdata('download_id');
 
-    			$this->session->unset_userdata('user_login_email');
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
-    			$this->session->unset_userdata('expiry_date');
+			redirect($redirect_url, 'refresh');
 
-    			$this->session->unset_userdata('brand_logo');
+		}
 
 
 
-    			$this->subscriber_login($user_id);
+	}
 
-    		}
 
 
+	public function xendit_action()
+	{
 
-    		$redirect_url=base_url()."payment/transaction_log?action=cancel";
+		$package_id = $this->uri->segment(3);
 
-    		redirect($redirect_url, 'refresh');
+		$user_id = $this->uri->segment(4);
 
-    	}
+		// $user_id = $this->user_id;
 
+		$payment_info = $this->basic->get_data('payment_config');
 
 
-    }
 
+		$currency = isset($payment_info[0]["currency"]) ? $payment_info[0]["currency"] : "IDR";
 
 
-    public function xendit_action()
 
-    {
+		$package_info = $this->basic->get_data('package', ['where' => ['id' => $package_id]], ['package_name', 'price']);
 
-    	$package_id = $this->uri->segment(3);
+		$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
-    	$user_id = $this->uri->segment(4);
+		$package_name = isset($package_info[0]['package_name']) ? $package_info[0]['package_name'] : '';
 
-    	// $user_id = $this->user_id;
 
-    	$payment_info = $this->basic->get_data('payment_config');
 
+		$user_info = $this->basic->get_data('users', ['where' => ['id' => $user_id]], ['name', 'email', 'mobile']);
 
+		$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
 
-    	$currency=isset($payment_info[0]["currency"])?$payment_info[0]["currency"]:"IDR";
+		$user_email = isset($user_info[0]['email']) ? $user_info[0]['email'] : '';
 
+		$user_mobile = isset($user_info[0]['mobile']) ? $user_info[0]['mobile'] : '012345678901';
 
 
-    	$package_info = $this->basic->get_data('package',['where'=>['id'=>$package_id]],['package_name','price']);
 
-    	$payment_amount = isset($package_info[0]['price']) ? $package_info[0]['price'] : '';
 
-    	$package_name = isset($package_info[0]['package_name']) ? $package_info[0]['package_name'] : '';
 
+		$xendit_success_redirect_url = base_url('stripe_action/xendit_success/') . $package_id . '/' . $user_id;
 
+		$xendit_failure_redirect_url = base_url('stripe_action/xendit_fail/') . $package_id . '/' . $user_id;
 
-    	$user_info = $this->basic->get_data('users',['where'=>['id'=>$user_id]],['name','email','mobile']);
+		$external_id = 'xendit_' . uniqid();
 
-    	$user_name = isset($user_info[0]['name']) ? $user_info[0]['name'] : '';
+		$this->load->library('xendit');
 
-    	$user_email = isset($user_info[0]['email']) ? $user_info[0]['email'] : '';
+		$this->xendit->external_id = $external_id;
 
-    	$user_mobile = isset($user_info[0]['mobile']) ? $user_info[0]['mobile'] : '012345678901';
+		$this->xendit->payer_email = $user_email;
 
+		$this->xendit->description = $package_name;
 
+		$this->xendit->amount = $payment_amount;
 
+		$this->xendit->xendit_success_redirect_url = $xendit_success_redirect_url;
 
+		$this->xendit->xendit_failure_redirect_url = $xendit_failure_redirect_url;
 
-    	$xendit_success_redirect_url = base_url('stripe_action/xendit_success/').$package_id.'/'.$user_id;
+		$this->xendit->currency = $currency;
 
-    	$xendit_failure_redirect_url = base_url('stripe_action/xendit_fail/').$package_id.'/'.$user_id;
+		$this->xendit->button_lang = $this->lang->line('Pay With Xendit');
 
-    	$external_id = 'xendit_'.uniqid();
+		$this->xendit->get_long_url();
 
-    	$this->load->library('xendit');
+	}
 
-    	$this->xendit->external_id =$external_id;
+	public function xendit_success()
+	{
 
-    	$this->xendit->payer_email =$user_email;
+		$package_id = $this->uri->segment(3);
 
-    	$this->xendit->description =$package_name;
+		$user_id = $this->uri->segment(4);
 
-    	$this->xendit->amount = $payment_amount;
+		$this->load->library('xendit');
 
-    	$this->xendit->xendit_success_redirect_url = $xendit_success_redirect_url;
+		$response = $this->xendit->success_action();
 
-    	$this->xendit->xendit_failure_redirect_url = $xendit_failure_redirect_url;
+		if (isset($response[0]['status']) && $response[0]['status'] == 'PAID') {
 
-    	$this->xendit->currency = $currency ;
+			// $user_id = $this->user_id;
 
-    	$this->xendit->button_lang = $this->lang->line('Pay With Xendit');
+			$user_id = $user_id;
 
-    	$this->xendit->get_long_url();
+			$package_id = $package_id;
 
-    }
+			$transaction_id = isset($response[0]['external_id']) ? $response[0]['external_id'] : 0;
 
-    public function xendit_success()
 
-    {
 
-    	$package_id = $this->uri->segment(3);	
+			$simple_where['where'] = array('user_id' => $user_id);
 
-    	$user_id = $this->uri->segment(4);	
+			$select = array('cycle_start_date', 'cycle_expired_date');
 
-    	$this->load->library('xendit');
+			$prev_payment_info = $this->basic->get_data('transaction_history', $simple_where, $select, $join = '', $limit = '1', $start = 0, $order_by = 'ID DESC', $group_by = '');
 
-    	$response = $this->xendit->success_action();
 
-    	if(isset($response[0]['status']) && $response[0]['status'] == 'PAID')
 
-    	{
 
-    		// $user_id = $this->user_id;
 
-    		$user_id = $user_id;
+			$prev_cycle_expired_date = "";
 
-    		$package_id = $package_id;
+			$price = 0;
 
-    		$transaction_id = isset($response[0]['external_id']) ? $response[0]['external_id'] : 0;
+			$cycle_start_date = "";
+			$cycle_expired_date = "";
 
+			$package_data = $this->basic->get_data("package", $where = array("where" => array("package.id" => $package_id)));
 
+			if (is_array($package_data) && array_key_exists(0, $package_data))
 
-    		$simple_where['where'] = array('user_id'=>$user_id);
+				$price = $package_data[0]["price"];
 
-    		$select = array('cycle_start_date','cycle_expired_date');
+			$validity = $package_data[0]["validity"];
 
-    		$prev_payment_info = $this->basic->get_data('transaction_history',$simple_where,$select,$join='',$limit='1',$start=0,$order_by='ID DESC',$group_by='');
 
 
+			$payment_amount = isset($package_data[0]['price']) ? $package_data[0]['price'] : 0;
 
 
 
-    		$prev_cycle_expired_date="";
+			$validity_str = '+' . $validity . ' day';
 
-    		$price=0;
 
-    		$cycle_start_date = "";
-    		$cycle_expired_date = "";
 
-    		$package_data=$this->basic->get_data("package",$where=array("where"=>array("package.id"=>$package_id)));
+			foreach ($prev_payment_info as $info) {
 
-    		if(is_array($package_data) && array_key_exists(0, $package_data))
+				$prev_cycle_expired_date = $info['cycle_expired_date'];
 
-    			$price=$package_data[0]["price"];
+			}
 
-    		$validity=$package_data[0]["validity"];
 
 
+			if ($prev_cycle_expired_date == "") {
 
-    		$payment_amount = isset($package_data[0]['price']) ? $package_data[0]['price'] : 0;
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
+			} else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))) {
 
-    		$validity_str='+'.$validity.' day';
+				$cycle_start_date = date('Y-m-d');
 
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
+			} else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))) {
 
-    		foreach($prev_payment_info as $info){
+				$cycle_start_date = date("Y-m-d", strtotime('+1 day', strtotime($prev_cycle_expired_date)));
 
-    			$prev_cycle_expired_date=$info['cycle_expired_date'];
+				$cycle_expired_date = date("Y-m-d", strtotime($validity_str, strtotime($cycle_start_date)));
 
-    		}
+			}
 
 
 
-    		if($prev_cycle_expired_date==""){
+			/** insert the transaction into database ***/
 
-    			$cycle_start_date=date('Y-m-d');
+			$receiver_email = $this->session->userdata('user_login_email');
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$country = "";
 
-    		}
+			$payment_date = date('Y-m-d H:i:s');
 
 
 
-    		else if (strtotime($prev_cycle_expired_date) < strtotime(date('Y-m-d'))){
 
-    			$cycle_start_date=date('Y-m-d');
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+			$insert_data = array(
 
-    		}
+				"verify_status" => "",
 
+				"first_name" => "",
 
+				"last_name" => "",
 
-    		else if (strtotime($prev_cycle_expired_date) > strtotime(date('Y-m-d'))){
+				"paypal_email" => "",
 
-    			$cycle_start_date=date("Y-m-d",strtotime('+1 day',strtotime($prev_cycle_expired_date)));
+				"receiver_email" => $receiver_email,
 
-    			$cycle_expired_date=date("Y-m-d",strtotime($validity_str,strtotime($cycle_start_date)));
+				"country" => $country,
 
-    		}
+				"payment_date" => $payment_date,
 
+				"payment_type" => 'xendit',
 
+				"transaction_id" => $transaction_id,
 
-    		/** insert the transaction into database ***/
+				"user_id" => $user_id,
 
-    		$receiver_email=$this->session->userdata('user_login_email');
+				"package_id" => $package_id,
 
-    		$country="";
+				"cycle_start_date" => $cycle_start_date,
 
-    		$payment_date = date('Y-m-d H:i:s');
+				"cycle_expired_date" => $cycle_expired_date,
 
+				"paid_amount" => $payment_amount
 
+			);
 
 
 
-    		$insert_data=array(
 
-    			"verify_status"     =>"",
 
-    			"first_name"        =>"",
+			$this->basic->insert_data('transaction_history', $insert_data);
 
-    			"last_name"         =>"",
+			$this->session->set_userdata("payment_success", 1);
 
-    			"paypal_email"      =>"",
 
-    			"receiver_email"    =>$receiver_email,
 
-    			"country"           =>$country,
+			/** Update user table **/
 
-    			"payment_date"      =>$payment_date,
+			$table = 'users';
 
-    			"payment_type"      =>'xendit',
+			$where = array('id' => $user_id);
 
-    			"transaction_id"    =>$transaction_id,
+			$data = array('expired_date' => $cycle_expired_date, "package_id" => $package_id, "bot_status" => "1");
 
-    			"user_id"           =>$user_id,
+			$this->basic->update_data($table, $where, $data);
 
-    			"package_id"        =>$package_id,
 
-    			"cycle_start_date"  =>$cycle_start_date,
 
-    			"cycle_expired_date"=>$cycle_expired_date,
+			$product_short_name = $this->config->item('product_short_name');
 
-    			"paid_amount"       =>$payment_amount
+			$from = $this->config->item('institute_email');
 
-    		);
+			$mask = $this->config->item('product_name');
 
+			$subject = "Payment Confirmation";
 
+			$where = array();
 
+			$where['where'] = array('id' => $user_id);
 
+			$user_email = $this->basic->get_data('users', $where, $select = '');
 
-    		$this->basic->insert_data('transaction_history', $insert_data);
 
-    		$this->session->set_userdata("payment_success",1);
 
+			$payment_confirmation_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_payment')), array('subject', 'message'));
 
 
-    		/** Update user table **/
 
-    		$table='users';
+			if (isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
 
-    		$where=array('id'=>$user_id);
 
-    		$data=array('expired_date'=>$cycle_expired_date,"package_id"=>$package_id,"bot_status"=>"1");
 
-    		$this->basic->update_data($table,$where,$data);
+				$to = $user_email[0]['email'];
 
+				$url = base_url();
 
+				$subject = $payment_confirmation_email_template[0]['subject'];
 
-    		$product_short_name = $this->config->item('product_short_name');
+				$message = str_replace(array('#PRODUCT_SHORT_NAME#', '#APP_SHORT_NAME#', '#CYCLE_EXPIRED_DATE#', '#SITE_URL#', '#APP_NAME#'), array($product_short_name, $product_short_name, $cycle_expired_date, $url, $mask), $payment_confirmation_email_template[0]['message']);
 
-    		$from = $this->config->item('institute_email');
+				//send mail to user
 
-    		$mask = $this->config->item('product_name');
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    		$subject = "Payment Confirmation";
 
-    		$where = array();
 
-    		$where['where'] = array('id'=>$user_id);
+			} else {
 
-    		$user_email = $this->basic->get_data('users',$where,$select='');
 
 
+				$to = $user_email[0]['email'];
 
-    		$payment_confirmation_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_payment')),array('subject','message'));
+				$subject = "Payment Confirmation";
 
+				$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='" . base_url() . "'>{$mask}</a> team";
 
+				//send mail to user
 
-    		if(isset($payment_confirmation_email_template[0]) && $payment_confirmation_email_template[0]['subject'] != '' && $payment_confirmation_email_template[0]['message'] != '') {
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
 
 
-    			$to = $user_email[0]['email'];
+			}
 
-    			$url = base_url();
 
-    			$subject = $payment_confirmation_email_template[0]['subject'];
 
-    			$message = str_replace(array('#PRODUCT_SHORT_NAME#','#APP_SHORT_NAME#','#CYCLE_EXPIRED_DATE#','#SITE_URL#','#APP_NAME#'),array($product_short_name,$product_short_name,$cycle_expired_date,$url,$mask),$payment_confirmation_email_template[0]['message']);
+			// new payment made email
 
-	                //send mail to user
+			$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management", array('where' => array('template_type' => 'stripe_new_payment_made')), array('subject', 'message'));
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
 
 
+			if (isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] != '' && $paypal_new_payment_made_email_template[0]['message'] != '') {
 
-    		} else {
 
 
+				$to = $from;
 
-    			$to = $user_email[0]['email'];
+				$subject = $paypal_new_payment_made_email_template[0]['subject'];
 
-    			$subject = "Payment Confirmation";
+				$message = str_replace('#PAID_USER_NAME#', $user_email[0]['name'], $paypal_new_payment_made_email_template[0]['message']);
 
-    			$message = "Congratulation,<br/> we have received your payment successfully. Now you are able to use {$product_short_name} system till {$cycle_expired_date}.<br/><br/>Thank you,<br/><a href='".base_url()."'>{$mask}</a> team";
+				//send mail to admin
 
-	                //send mail to user
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
 
 
+			} else {
 
-    		}
 
 
+				$to = $from;
 
-	        // new payment made email
+				$subject = "New Payment Made";
 
-    		$paypal_new_payment_made_email_template = $this->basic->get_data("email_template_management",array('where'=>array('template_type'=>'stripe_new_payment_made')),array('subject','message'));
+				$message = "New payment has been made by {$user_email[0]['name']}";
 
+				//send mail to admin
 
+				$this->_mail_sender($from, $to, $subject, $message, $mask, $html = 1);
 
-    		if(isset($paypal_new_payment_made_email_template[0]) && $paypal_new_payment_made_email_template[0]['subject'] !='' && $paypal_new_payment_made_email_template[0]['message'] != '') {
+			}
 
 
 
-    			$to = $from;
+			// affiliate Section
 
-    			$subject = $paypal_new_payment_made_email_template[0]['subject'];
+			if ($this->addon_exist('affiliate_system')) {
 
-    			$message = str_replace('#PAID_USER_NAME#',$user_email[0]['name'],$paypal_new_payment_made_email_template[0]['message']);
+				$get_affiliate_id = $this->basic->get_data("users", ['where' => ['id' => $user_id]], ['affiliate_id']);
 
-	                //send mail to admin
+				$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id'] : 0;
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				if ($affiliate_id != 0) {
 
+					$this->affiliate_commission($affiliate_id, $user_id, 'payment', $price);
 
+				}
 
-    		} else {
+			}
 
 
 
-    			$to = $from;
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
-    			$subject = "New Payment Made";
 
-    			$message = "New payment has been made by {$user_email[0]['name']}";
 
-	                //send mail to admin
+				$this->session->unset_userdata('user_type');
 
-    			$this->_mail_sender($from, $to, $subject, $message, $mask, $html=1);
+				$this->session->unset_userdata('logged_in');
 
-    		}
+				$this->session->unset_userdata('username');
 
+				$this->session->unset_userdata('user_id');
 
+				$this->session->unset_userdata('download_id');
 
-	        // affiliate Section
+				$this->session->unset_userdata('user_login_email');
 
-    		if($this->addon_exist('affiliate_system')) {
+				$this->session->unset_userdata('expiry_date');
 
-    			$get_affiliate_id = $this->basic->get_data("users",['where'=>['id'=>$user_id]],['affiliate_id']);
+				$this->session->unset_userdata('brand_logo');
 
-    			$affiliate_id = isset($get_affiliate_id[0]['affiliate_id']) ? $get_affiliate_id[0]['affiliate_id']:0;
 
-    			if($affiliate_id != 0) {
 
-    				$this->affiliate_commission($affiliate_id,$user_id,'payment',$price);
+				$this->subscriber_login($user_id);
 
-    			}
+			}
 
-    		}
 
 
+			$redirect_url = base_url() . "payment/transaction_log?action=success";
 
-    		if($this->config->item("auto_relogin_after_purchase") == '1') {
+			redirect($redirect_url, 'refresh');
 
+		} else {
 
 
-    			$this->session->unset_userdata('user_type');
 
-    			$this->session->unset_userdata('logged_in');
+			if ($this->config->item("auto_relogin_after_purchase") == '1') {
 
-    			$this->session->unset_userdata('username');
 
-    			$this->session->unset_userdata('user_id');
 
-    			$this->session->unset_userdata('download_id');
+				$this->session->unset_userdata('user_type');
 
-    			$this->session->unset_userdata('user_login_email');
+				$this->session->unset_userdata('logged_in');
 
-    			$this->session->unset_userdata('expiry_date');
+				$this->session->unset_userdata('username');
 
-    			$this->session->unset_userdata('brand_logo');
+				$this->session->unset_userdata('user_id');
 
+				$this->session->unset_userdata('download_id');
 
+				$this->session->unset_userdata('user_login_email');
 
-    			$this->subscriber_login($user_id);
+				$this->session->unset_userdata('expiry_date');
 
-    		}
+				$this->session->unset_userdata('brand_logo');
 
-    		
 
-    		$redirect_url=base_url()."payment/transaction_log?action=success";
 
-    		redirect($redirect_url, 'refresh');
+				$this->subscriber_login($user_id);
 
-    	}
+			}
 
-    	else
 
-    	{
 
+			$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
+			redirect($redirect_url, 'refresh');
 
-    		if($this->config->item("auto_relogin_after_purchase") == '1') {
+		}
 
 
 
-    			$this->session->unset_userdata('user_type');
+	}
 
-    			$this->session->unset_userdata('logged_in');
 
-    			$this->session->unset_userdata('username');
 
-    			$this->session->unset_userdata('user_id');
+	public function xendit_fail()
+	{
 
-    			$this->session->unset_userdata('download_id');
+		$redirect_url = base_url() . "payment/transaction_log?action=cancel";
 
-    			$this->session->unset_userdata('user_login_email');
+		redirect($redirect_url, 'refresh');
 
-    			$this->session->unset_userdata('expiry_date');
-
-    			$this->session->unset_userdata('brand_logo');
-
-
-
-    			$this->subscriber_login($user_id);
-
-    		}
-
-    		
-
-    		$redirect_url=base_url()."payment/transaction_log?action=cancel";
-
-    		redirect($redirect_url, 'refresh');
-
-    	}
-
-
-
-    }
-
-
-
-    public function xendit_fail()
-
-    {
-
-    	$redirect_url=base_url()."payment/transaction_log?action=cancel";
-
-    	redirect($redirect_url, 'refresh');
-
-    }
+	}
 
 
 

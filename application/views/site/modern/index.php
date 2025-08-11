@@ -769,7 +769,8 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 					<div class="footer-widget wow fadeInUp text-center" data-wow-delay=".2s">
 						<a href="" class="mb-4 d-block"><img class="logo" src="<?php echo base_url();?>assets/img/logo.png" alt=""> </a>
 						<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Revolutionary, world's very first, and complete marketing software for Instagram developed using official APIs."); ?></p>
-						
+						<br/>
+						<img class="logo" width="150" src="<?php echo base_url();?>assets/img/vm.png" alt="">
 					</div>
 				</div>
 				<div class="col-12 col-md-4">

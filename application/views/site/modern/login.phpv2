@@ -1,0 +1,171 @@
+<!-- Enhanced Chatwiser Login Page -->
+<div class="login-page-wrapper">
+  <!-- Animated Background Particles -->
+  <div class="particles-container">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 7s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 8s;"></div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+        
+        <!-- Wrapper for login-brand and login-card -->
+        <div class="login-wrapper">
+          <!-- Enhanced Logo Section -->
+          <div class="login-brand animated-logo">
+            <div class="logo-container">
+              <img src="<?php echo base_url(); ?>assets/img/logo.png" alt="<?php echo $this->config->item('product_name');?>" class="logo-image">
+              <div class="logo-glow"></div>
+            </div>
+            <h2 class="brand-tagline">Connect • Engage • Grow</h2>
+          </div>
+
+          <!-- Enhanced Login Card -->
+          <div class="login-card">
+            <div class="card-header">
+              <h4 class="login-title">
+                <i class="fas fa-sign-in-alt"></i> 
+                <?php echo $is_exist_team_member_addon && $is_team_login=='1' ? $this->lang->line("Team Login") : $this->lang->line("Login"); ?>
+              </h4>
+            </div>
+
+            <!-- Alert Messages -->
+            <?php
+              if($this->session->userdata('login_msg')!='')
+              {
+                  echo "<div class='alert alert-danger animated-alert'>";
+                      echo $this->session->userdata('login_msg');
+                  echo "</div>";
+                  $this->session->unset_userdata('login_msg');
+              }
+              if($this->session->flashdata('reset_success')!='')
+              {
+                  echo "<div class='alert alert-success animated-alert'>";
+                      echo $this->session->flashdata('reset_success');
+                  echo "</div>";
+              }
+              if($this->session->userdata('reg_success') != ''){
+                echo '<div class="alert alert-success animated-alert">'.$this->session->userdata("reg_success").'</div>';
+                $this->session->unset_userdata('reg_success');
+              }
+              if(form_error('username') != '' || form_error('password')!="" )
+              {
+                $form_error="";
+                if(form_error('username') != '') $form_error.=form_error('username');
+                if(form_error('password') != '') $form_error.=form_error('password');
+                echo "<div class='alert alert-danger animated-alert'>".$form_error."</div>";
+              }
+
+              $default_user = $default_pass ="";
+
+            ?>
+
+            <div class="card-body">
+              <!-- Enhanced Login Form -->
+              <form method="POST" action="<?php echo $is_exist_team_member_addon && $is_team_login=='1' ? base_url('home/login/1') : base_url('home/login'); ?>" class="login-form needs-validation" novalidate="">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="<?php echo $this->session->userdata('csrf_token_session'); ?>">
+                
+                <!-- Email Field -->
+                <div class="form-group floating-field">
+                  <div class="input-wrapper">
+                    <input id="email" type="text" class="form-control enhanced-input" value="<?php echo $default_user;?>" name="username" tabindex="1" required autofocus>
+                    <label for="email" class="floating-label">
+                      <?php echo $is_exist_team_member_addon && $is_team_login=='1' ? $this->lang->line("Email") : $this->lang->line("Email Or FB ID"); ?>
+                    </label>
+                    <i class="fas fa-envelope input-icon"></i>
+                  </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group floating-field">
+                  <div class="input-wrapper">
+                    <input id="password" type="password" class="form-control enhanced-input" value="<?php echo $default_pass;?>" name="password" tabindex="2" required>
+                    <label for="password" class="floating-label">
+                      <?php echo $this->lang->line("Password"); ?>
+                    </label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <?php if(!$is_exist_team_member_addon || $is_team_login=='0'):?>
+                      <a href="<?php echo site_url();?>home/forgot_password" class="forgot-link">
+                        <?php echo $this->lang->line("Forgot your password?"); ?>
+                      </a>
+                    <?php endif;?>
+                  </div>
+                </div>
+
+                <!-- Enhanced Login Button -->
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary btn-lg btn-block login-btn" tabindex="4">
+                    <span class="btn-text">
+                      <i class="fa fa-sign-in-alt"></i> 
+                      <?php echo $is_exist_team_member_addon && $is_team_login=='1' ? $this->lang->line("Team Login") : $this->lang->line("Login"); ?>
+                    </span>
+                    <div class="btn-loader" style="display: none;">
+                      <div class="spinner"></div>
+                    </div>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Enhanced Social Login -->
+              <?php if($this->config->item('enable_signup_form')!='0' && ($is_team_login=='0'|| !$is_exist_team_member_addon)) : ?>
+              <div class="social-login-section">
+                <div class="divider">
+                  <span>or continue with</span>
+                </div>
+                
+                <div class="social-buttons">
+                  <div class="social-btn google-btn">
+                    <?php echo str_replace("ThisIsTheLoginButtonForGoogle",$this->lang->line("Sign in with Google"), $google_login_button); ?>
+                  </div>
+                  <div class="social-btn facebook-btn">
+                    <?php echo str_replace("ThisIsTheLoginButtonForFacebook",$this->lang->line("Sign in with Facebook"), $fb_login_button); ?>
+                  </div>
+                </div>
+              </div>
+              <?php endif;?>
+
+              <!-- Enhanced Footer Links -->
+              <div class="login-footer">
+                <?php if($is_team_login=='0' || !$is_exist_team_member_addon):?>
+                  <?php if($this->config->item('enable_signup_form')!='0'):?>
+                    <div class="signup-link">
+                      <?php echo $this->lang->line("Do not have an account?"); ?> 
+                      <a href="<?php echo base_url('home/sign_up'); ?>"><?php echo $this->lang->line("Create one"); ?></a>
+                    </div>
+                  <?php endif;?>
+
+                  <?php if($is_team_login=='0' && $is_exist_team_member_addon):?>
+                    <div class="team-login-link">
+                      <a href="<?php echo base_url('home/login/1'); ?>"><?php echo $this->lang->line("Login as Team"); ?></a>
+                    </div>
+                  <?php endif;?>
+                <?php endif;?>
+
+                <?php if($is_team_login=='1' &&$is_exist_team_member_addon):?>
+                <div class="user-login-link">
+                  <a href="<?php echo base_url('home/login'); ?>"><?php echo $this->lang->line("Login as User"); ?></a>
+                </div>
+                <?php endif;?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php
+$current_theme = $this->config->item('current_theme');
+if($current_theme == '') $current_theme = 'modern';
+$style_url = "application/views/site/".$current_theme."/login_style.php";
+include($style_url);
+?>

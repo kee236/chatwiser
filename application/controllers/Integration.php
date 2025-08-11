@@ -184,6 +184,10 @@ class Integration extends Home
 				'title'=>$this->lang->line('Manual'),
 				'img_path' =>$asset_path_common.'payment/manualpayment.png',
 			],
+			'14'=>[
+				'title'=>$this->lang->line('Meps'),
+				'img_path' =>base_url('assets/img/payment/meps.png'),
+			],
 
 		];
 	}

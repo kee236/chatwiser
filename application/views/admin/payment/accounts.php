@@ -415,6 +415,28 @@
 
 
 
+                 <div class="row">
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label for=""><i class="fas fa-key"></i>  <?php echo $this->lang->line("Meps Public Key");?></label>
+                      <input name="meps_public_key" value="<?php echo isset($xvalue['meps_public_key']) ? $xvalue['meps_public_key'] :""; ?>" class="form-control" type="text">  
+                      <span class="red"><?php echo form_error('meps_public_key'); ?></span>
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label for=""><i class="fas fa-key"></i> <?php echo $this->lang->line("Meps Profile ID");?></label>
+                      <input name="meps_profile_id" value="<?php echo isset($xvalue['meps_profile_id']) ? $xvalue['meps_profile_id'] :""; ?>" class="form-control" type="text">  
+                      <span class="red"><?php echo form_error('meps_profile_id'); ?></span>
+                    </div>
+                  </div>
+
+
+                </div>
+
+
+
 
                 <div class="row">
                   <div class="col-12 col-md-6">
