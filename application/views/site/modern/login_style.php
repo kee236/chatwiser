@@ -1,8 +1,11 @@
 <?php
-// Clean Chatwiser Login Page Styles
+// Clean Chatwiser Login Page Styles - Updated with New Branding
 ?>
 
 <style>
+/* Import new brand fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -37,7 +40,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #DC4985, #F18DA2);
+    background: linear-gradient(90deg, #052CFF, #0ADCC7);
     border-radius: 16px 16px 0 0;
 }
 
@@ -57,7 +60,7 @@ body {
 .logo-icon {
     width: 56px;
     height: 56px;
-    background: linear-gradient(45deg, #DC4985, #F18DA2);
+    background: linear-gradient(45deg, #052CFF, #0ADCC7);
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -66,7 +69,7 @@ body {
     font-size: 24px;
     font-weight: 600;
     margin-right: 16px;
-    box-shadow: 0 8px 20px rgba(220, 73, 133, 0.3);
+    box-shadow: 0 8px 20px rgba(5, 44, 255, 0.3);
     transition: all 0.3s ease;
     overflow: hidden;
 }
@@ -81,7 +84,7 @@ body {
 
 .logo-icon:hover {
     transform: scale(1.05);
-    box-shadow: 0 12px 25px rgba(220, 73, 133, 0.4);
+    box-shadow: 0 12px 25px rgba(5, 44, 255, 0.4);
 }
 
 .logo-icon:hover .logo-image {
@@ -97,7 +100,7 @@ body {
 .brand-name {
     font-size: 28px;
     font-weight: 700;
-    color: #333;
+    color: #120132;
     margin: 0;
 }
 
@@ -159,7 +162,7 @@ body {
     width: 18px;
     height: 18px;
     margin-right: 8px;
-    accent-color: #DC4985;
+    accent-color: #052CFF;
     cursor: pointer;
 }
 
@@ -172,7 +175,7 @@ body {
 }
 
 .forgot-link {
-    color: #DC4985;
+    color: #052CFF;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -180,14 +183,14 @@ body {
 }
 
 .forgot-link:hover {
-    color: #F18DA2;
+    color: #0ADCC7;
 }
 
 /* Sign In Button */
 .signin-btn {
     width: 100%;
     padding: 14px 24px;
-    background: linear-gradient(45deg, #DC4985, #F18DA2);
+    background: linear-gradient(45deg, #052CFF, #0ADCC7);
     border: none;
     border-radius: 8px;
     color: white;
@@ -202,7 +205,7 @@ body {
 
 .signin-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(220, 73, 133, 0.3);
+    box-shadow: 0 8px 20px rgba(5, 44, 255, 0.3);
 }
 
 .signin-btn:active {
@@ -264,9 +267,9 @@ body {
 }
 
 .social-btn:hover {
-    border-color: #DC4985;
-    color: #DC4985;
-    background: rgba(220, 73, 133, 0.05);
+    border-color: #052CFF;
+    color: #052CFF;
+    background: rgba(5, 44, 255, 0.05);
     transform: translateY(-1px);
 }
 
@@ -286,7 +289,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 12px 24px;
-    background: linear-gradient(45deg, #DC4985, #F18DA2);
+    background: linear-gradient(45deg, #052CFF, #0ADCC7);
     border: none;
     border-radius: 8px;
     color: white;
@@ -300,7 +303,7 @@ body {
 
 .team-login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(220, 73, 133, 0.3);
+    box-shadow: 0 8px 20px rgba(5, 44, 255, 0.3);
 }
 
 .team-login-btn i {
@@ -322,14 +325,14 @@ body {
 }
 
 .footer-link a {
-    color: #DC4985;
+    color: #052CFF;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .footer-link a:hover {
-    color: #F18DA2;
+    color: #0ADCC7;
 }
 
 /* Loading State */

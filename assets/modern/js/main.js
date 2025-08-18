@@ -102,44 +102,71 @@
 
 
     //========= glightbox
-    const myGallery = GLightbox({
-        'href': promo_video,
-        'type': 'video',
-        'source': video_source, //vimeo, youtube or local
-        'width': 900,
-        'autoplayVideos': true,
-    });
+    // const myGallery = GLightbox({
+    //     'href': promo_video,
+    //     'type': 'video',
+    //     'source': video_source, //vimeo, youtube or local
+    //     'width': 900,
+    //     'autoplayVideos': true,
+    // });
 
 
-    //======== tiny slider
-    var slider = new tns({
-        container: '.testimonial-slider',
-        items: 2.4,
-        slideBy: 'page',
-        mouseDrag: true,
-        autoplay: true,
-        loop : true,
-        gutter: 60,
-        nav: false,
-        controlsText: ['<i class="lni lni-arrow-left"></i>', '<i class="lni lni-arrow-right"></i>'],
-        responsive: {
-            0: {
-                items: 1,
-            },
+    //======== tiny slider (removed - replaced with Swiper for testimonials)
+    // var slider = new tns({
+    //     container: '.testimonial-slider',
+    //     items: 2.4,
+    //     slideBy: 'page',
+    //     mouseDrag: true,
+    //     autoplay: true,
+    //     loop : true,
+    //     gutter: 60,
+    //     nav: false,
+    //     controlsText: ['<i class="lni lni-arrow-left"></i>', '<i class="lni lni-arrow-right"></i>'],
+    //     responsive: {
+    //         0: {
+    //             items: 1,
+    //         },
+    //         992: {
+    //             items: 1.8,
+    //             gutter: 30,
+    //         },
+    //         1200: {
+    //             items: 2,
+    //             gutter: 100,
+    //         },
+    //         1400: {
+    //             items: 2.4,
+    //         },
+    //     }
+    // });
+
+    //======== testimonials carousel swiper
+    var testimonialsSwiper = new Swiper('.testimonial-carousel', {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.testimonial-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.testimonial-next',
+            prevEl: '.testimonial-prev',
+        },
+        slidesPerView: 1,
+        spaceBetween: 30,
+        speed: 800,
+        breakpoints: {
             992: {
-                items: 1.8,
-                gutter: 30,
-            },
-            1200: {
-                items: 2,
-                gutter: 100,
-            },
-            1400: {
-                items: 2.4,
+                slidesPerView: 2,
+                spaceBetween: 40,
             },
         }
     });
 
+    //======== screenshots swiper
     var mySwiper = new Swiper('.swiper-container', {
         loop: true,
         pagination: {
@@ -147,7 +174,6 @@
             clickable: true,
         },
         speed: 1000,
-        // effect: 'coverflow',
         autoplay: {
           delay: 1500,
           disableOnInteraction: false,
@@ -156,22 +182,22 @@
         slidesPerView: 5,
         breakpoints: {
             0: {
-                slidesPerView: 2,
+                slidesPerView: 1,
             },
             640: {
                 slidesPerView: 2,
             },
             768: {
-                slidesPerView: 3,
+                slidesPerView: 2,
             },
             992: {
-                slidesPerView: 4,
+                slidesPerView: 2,
             },
             1200: {
-                slidesPerView: 5,
+                slidesPerView: 2,
             },
         }
-    })
+    });
 
 
     //WOW Scroll Spy
@@ -184,3 +210,34 @@
 
 
 })();
+// Cookie Alert Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const acceptCookies = document.querySelector('.accept-cookies');
+    const cookieAlert = document.querySelector('.modern-cookie-alert');
+    
+    if (acceptCookies && cookieAlert) {
+        acceptCookies.addEventListener('click', function() {
+            // Set cookie acceptance
+            document.cookie = "cookies_accepted=yes; path=/; max-age=" + (365 * 24 * 60 * 60);
+            
+            // Hide cookie alert with animation
+            cookieAlert.style.transform = 'translateY(100%)';
+            cookieAlert.style.opacity = '0';
+            
+            setTimeout(() => {
+                cookieAlert.style.display = 'none';
+            }, 300);
+            
+            // Send AJAX request to update session
+            fetch(window.location.origin + '/home/accept_cookies', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({accept: true})
+            }).catch(error => {
+                console.log('Cookie acceptance logged locally');
+            });
+        });
+    }
+});

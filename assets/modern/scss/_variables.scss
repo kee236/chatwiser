@@ -1,50 +1,49 @@
-// Font Family
-$font-1: 'Nunito', sans-serif;
+// Font Family - Updated to use Inter as primary
+$font-1: 'Inter', sans-serif;
 
-
-// Colors ---------------
-$white: #fff;
-$black: #222;
+// New Chatwiser Brand Colors ---------------
+$white: #FFFFFF;
+$black: #0F0E0F;
 $gray: #F9F9F9;
 
+// Social Media Colors
 $facebook: #6598FE;
 $twitter: #5FC5F2;
 $instagram: #FF679D;
 $linkedin: #336DB8;
 
+// New Brand Theme Colors
+$primary-blue: #052CFF;
+$secondary-teal: #0ADCC7; 
+$dark-purple: #120132;
+$brand-white: #FFFFFF;
+$brand-black: #0F0E0F;
 
-// Theme Color
-$theme-color: #DE5088;
+// Primary Theme Color (updated to new brand)
+$theme-color: #052CFF;
 
-
-//Body Color
+// Body Color (updated for new brand)
 $body-color: #505478;
 
+// Border Color (updated)
+$border-color: #E1E5E9;
 
-// Border Color
-$border-color: #5A5872;
-
-
-// Heading Color
-$heading-color: #505478;
-
+// Heading Color (updated)
+$heading-color: #120132;
 
 // Soft color
 $black-soft: #868AAA;
 
-
-
-$gradient-1: linear-gradient(#4354e2 0%, #6ca3f3 100%);
-$gradient-2: linear-gradient(#dc4985 0%, #f18da2 100%);
+// New Brand Gradients
+$gradient-1: linear-gradient(45deg, #052CFF 0%, #0ADCC7 100%);
+$gradient-2: linear-gradient(135deg, #052CFF 0%, #0ADCC7 100%);
 $gradient-3: linear-gradient(#2cc590 0%, #75eb92 100%);
 $gradient-4: linear-gradient(#a866d1 0%, #f9a4d7 100%);
 
-
-
-
-
-
-
+// Brand Specific Gradients
+$gradient-primary: linear-gradient(45deg, #052CFF, #0ADCC7);
+$gradient-brand: linear-gradient(135deg, #052CFF 0%, #0ADCC7 100%);
+$gradient-brand-reverse: linear-gradient(135deg, #0ADCC7 0%, #052CFF 100%);
 
 // Responsive Variables
 $desktop: 'only screen and (min-width: 1400px)';
