@@ -3726,6 +3726,35 @@ class Home extends CI_Controller
         // redirect($_SERVER['HTTP_REFERER'],'location');
     }
 
+
+    public function refund()
+{
+    $data['page_title'] = 'Refund Policy';
+    $current_theme = $this->config->item('current_theme');
+    if ($current_theme == '') $current_theme = 'modern';
+    $body_file_path = "views/site/" . $current_theme . "/refund.php";
+    if (file_exists(APPPATH . $body_file_path))
+        $body_load = "site/" . $current_theme . "/refund";
+    else
+        $body_load = "site/modern/refund";
+    $data['body'] = $body_load;
+    $this->_front_viewcontroller($data);
+}
+
+public function cancellation()
+{
+    $data['page_title'] = 'Cancellation Policy';
+    $current_theme = $this->config->item('current_theme');
+    if ($current_theme == '') $current_theme = 'modern';
+    $body_file_path = "views/site/" . $current_theme . "/cancellation.php";
+    if (file_exists(APPPATH . $body_file_path))
+        $body_load = "site/" . $current_theme . "/cancellation";
+    else
+        $body_load = "site/modern/cancellation";
+    $data['body'] = $body_load;
+    $this->_front_viewcontroller($data);
+}
+
     //=========================WEBSITE FUNCTIOS=======================
     //================================================================
 
