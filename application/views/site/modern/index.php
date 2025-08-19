@@ -80,7 +80,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 					</div>
 				</div>
 			</div>
-		</div> -->
+	</div> -->
 
 	<!--====== PRELOADER PART ENDS ======-->
 
@@ -114,7 +114,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									</li>
 									<li class="nav-item">
 										<a class="page-scroll" href="#contact"><?php echo $this->lang->line('Contact'); ?></a>
-									</li>
+	                                </li>
 	                                <?php if ($this->session->userdata('license_type') == 'double')  {?>
 	                                <li class="nav-item">
 	                                    <a href="<?php echo base_url('blog');?>"><?php echo $this->lang->line('Blog'); ?></a>
@@ -154,8 +154,8 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 						<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Chatwiser automatically responds to social media messages and comments, converts followers into customers, and grows your business 24/7 with AI-powered conversations in any language."); ?></p>
 						
 						<div class="hero-btns-with-stats">
-							<div class="hero-btns">
-								<a href="<?php echo site_url('home/sign_up'); ?>" class="main-btn btn-hover wow fadeInUp <?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>" data-wow-delay=".45s"><?php echo $this->lang->line("Sign up now"); ?></a>
+						<div class="hero-btns">
+							<a href="<?php echo site_url('home/sign_up'); ?>" class="main-btn btn-hover wow fadeInUp <?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>" data-wow-delay=".45s"><?php echo $this->lang->line("Sign up now"); ?></a>
 							</div>
 							    
 
@@ -187,7 +187,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							<span style="background: linear-gradient(45deg, #FF6B6B, #EE5A24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"><?php echo $this->lang->line("Slow Responses"); ?></span>
 						</h2>
 						<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Businesses lose thousands of potential customers every month due to delayed social media responses. Here's how chatwiser solves this problem."); ?></p>
-					</div>
+			</div>
 				</div>
 			</div>
 
@@ -290,14 +290,14 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 						<p class="results-subtitle wow fadeInUp" data-wow-delay=".3s"><?php echo $this->lang->line("Average improvements in the first 30 days"); ?></p>
 						
 						<div class="results-stats">
-							<div class="row">
-								<div class="col-xl-3 col-lg-3 col-md-6">
+			<div class="row">
+				<div class="col-xl-3 col-lg-3 col-md-6">
 									<div class="result-item wow fadeInUp" data-wow-delay=".4s">
 										<div class="result-number">
 											<span class="result-count" data-count="300">0</span>%
-										</div>
+						</div>
 										<div class="result-label"><?php echo $this->lang->line("Faster Response Time"); ?></div>
-									</div>
+						</div>
 								</div>
 								<div class="col-xl-3 col-lg-3 col-md-6">
 									<div class="result-item wow fadeInUp" data-wow-delay=".5s">
@@ -305,9 +305,9 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											<span class="result-count" data-count="89">0</span>%
 										</div>
 										<div class="result-label"><?php echo $this->lang->line("Message Response Rate"); ?></div>
-									</div>
-								</div>
-								<div class="col-xl-3 col-lg-3 col-md-6">
+					</div>
+				</div>
+				<div class="col-xl-3 col-lg-3 col-md-6">
 									<div class="result-item wow fadeInUp" data-wow-delay=".6s">
 										<div class="result-number">
 											<span class="result-count" data-count="45">0</span>%
@@ -362,15 +362,15 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Smart conversation flows"); ?></span>
-								</div>
+						</div>
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Natural language processing"); ?></span>
-								</div>
+					</div>
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Learning algorithms"); ?></span>
-								</div>
+				</div>
 							</div>
 						</div>
 					</div>
@@ -391,16 +391,16 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Facebook & Instagram"); ?></span>
-								</div>
+						</div>
 								<div class="feature-item coming-soon-item">
 									<i class="lni lni-time"></i>
 									<span><?php echo $this->lang->line("WhatsApp Business"); ?></span>
 									<span class="coming-soon-badge"><?php echo $this->lang->line("Coming Soon"); ?></span>
-								</div>
+					</div>
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Unified inbox"); ?></span>
-								</div>
+				</div>
 							</div>
 						</div>
 					</div>
@@ -421,7 +421,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Real-time metrics"); ?></span>
-								</div>
+						</div>
 								<div class="feature-item">
 									<i class="lni lni-checkmark-circle"></i>
 									<span><?php echo $this->lang->line("Conversion tracking"); ?></span>
@@ -567,23 +567,23 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							<div class="single-step wow fadeInUp" data-wow-delay=".2s">
 								<div class="step-number">
 									<span>1</span>
-								</div>
+						</div>
 								<div class="step-content">
 									<h4><?php echo $this->lang->line("Connect Your Social Accounts"); ?></h4>
 									<p><?php echo $this->lang->line("Link your Facebook, Instagram, and social media accounts in just one click. Our secure integration ensures your data is protected."); ?></p>
 								</div>
-							</div>
+									</div>
 
 							<!-- Step 2 -->
 							<div class="single-step wow fadeInUp" data-wow-delay=".3s">
 								<div class="step-number">
 									<span>2</span>
-								</div>
+										</div>
 								<div class="step-content">
 									<h4><?php echo $this->lang->line("Set Up AI Automation"); ?></h4>
 									<p><?php echo $this->lang->line("Configure your AI assistant with our intuitive visual builder. Create conversation flows and responses that match your brand voice."); ?></p>
+									</div>
 								</div>
-							</div>
 
 							<!-- Step 3 -->
 							<div class="single-step wow fadeInUp" data-wow-delay=".4s">
@@ -594,28 +594,28 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<h4><?php echo $this->lang->line("Customize Responses"); ?></h4>
 									<p><?php echo $this->lang->line("Train your AI to handle customer inquiries, qualify leads, and provide personalized responses in multiple languages."); ?></p>
 								</div>
-							</div>
+									</div>
 
 							<!-- Step 4 -->
 							<div class="single-step wow fadeInUp" data-wow-delay=".5s">
 								<div class="step-number">
 									<span>4</span>
-								</div>
+										</div>
 								<div class="step-content">
 									<h4><?php echo $this->lang->line("Go Live & Monitor"); ?></h4>
 									<p><?php echo $this->lang->line("Activate your AI assistant and watch it engage customers 24/7. Monitor performance and optimize with real-time analytics."); ?></p>
+									</div>
 								</div>
-							</div>
-						</div>
+									</div>
 
 						<div class="how-work-cta wow fadeInUp" data-wow-delay=".6s">
 							<a href="<?php echo site_url('home/sign_up'); ?>" class="main-btn btn-hover <?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>"><?php echo $this->lang->line("Start Your Free Trial"); ?></a>
 							<div class="setup-time">
 								<i class="lni lni-timer"></i>
 								<span><?php echo $this->lang->line("Setup takes less than 5 minutes"); ?></span>
-							</div>
-						</div>
-					</div>
+										</div>
+									</div>
+								</div>
 				</div>
 			</div>
 		</div>
@@ -631,19 +631,19 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 						<div class="section-title">
 							<h2 class="title wow fadeInUp" data-wow-delay=".2s"><?php echo $this->lang->line("Built-in Ecommerce Store"); ?></h2>
 							<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Transform conversations into sales with chatwiser's integrated ecommerce platform. Sell directly through social media conversations."); ?></p>
-						</div>
+									</div>
 
 						<div class="ecommerce-features">
 							<div class="ecommerce-feature wow fadeInUp" data-wow-delay=".5s">
 								<div class="feature-icon">
 									<i class="lni lni-cart"></i>
-								</div>
+										</div>
 								<div class="feature-content">
 									<h4><?php echo $this->lang->line("Digital Menu & Catalog"); ?></h4>
 									<p><?php echo $this->lang->line("Create beautiful product catalogs and digital menus that customers can browse and order from directly in chat."); ?></p>
+									</div>
 								</div>
-							</div>
-
+								
 							<div class="ecommerce-feature wow fadeInUp" data-wow-delay=".6s">
 								<div class="feature-icon">
 									<i class="lni lni-credit-cards"></i>
@@ -652,7 +652,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<h4><?php echo $this->lang->line("Seamless Payments"); ?></h4>
 									<p><?php echo $this->lang->line("Accept payments directly through conversations with secure payment processing and automated order confirmations."); ?></p>
 								</div>
-							</div>
+									</div>
 
 							<div class="ecommerce-feature wow fadeInUp" data-wow-delay=".7s">
 								<div class="feature-icon">
@@ -661,15 +661,15 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 								<div class="feature-content">
 									<h4><?php echo $this->lang->line("Order Management"); ?></h4>
 									<p><?php echo $this->lang->line("Track orders, manage inventory, and provide real-time delivery updates all through automated conversations."); ?></p>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-
+								
 						<div class="ecommerce-cta wow fadeInUp" data-wow-delay=".8s">
 							<a href="<?php echo site_url('home/sign_up'); ?>" class="main-btn btn-hover <?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>"><?php echo $this->lang->line("Explore Ecommerce Features"); ?></a>
+							</div>
 						</div>
-					</div>
-				</div>
+						</div>
 				<div class="col-xl-6 col-lg-6">
 					<div class="ecommerce-mockup wow fadeInRight" data-wow-delay=".3s">
 						<div class="mockup-container">
@@ -679,8 +679,8 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 										<div class="app-logo">
 											<i class="lni lni-restaurant"></i>
 											<span>chatwiser Store</span>
-										</div>
-									</div>
+					</div>
+				</div>
 									<div class="search-bar">
 										<i class="lni lni-search"></i>
 										<span>Search products...</span>
@@ -750,18 +750,18 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 						<div class="section-title">
 							<h2 class="title wow fadeInUp" data-wow-delay=".2s"><?php echo $this->lang->line("Visual Drag & Drop Chatbot Editor"); ?></h2>
 							<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Create sophisticated conversation flows with our intuitive visual editor. Build, test, and deploy intelligent chatbots without any coding required."); ?></p>
-						</div>
+				</div>
 
 						<div class="flow-builder-features">
 							<div class="builder-feature wow fadeInUp" data-wow-delay=".5s">
 								<div class="feature-icon">
 									<i class="lni lni-vector"></i>
-								</div>
+			</div>
 								<div class="feature-content">
 									<h4><?php echo $this->lang->line("Drag & Drop Interface"); ?></h4>
 									<p><?php echo $this->lang->line("Build complex conversation flows by simply dragging and connecting elements. No technical skills needed."); ?></p>
 								</div>
-							</div>
+			</div>
 
 							<div class="builder-feature wow fadeInUp" data-wow-delay=".6s">
 								<div class="feature-icon">
@@ -776,13 +776,13 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							<div class="builder-feature wow fadeInUp" data-wow-delay=".7s">
 								<div class="feature-icon">
 									<i class="lni lni-play"></i>
-								</div>
+			        	  </div>
 								<div class="feature-content">
 									<h4><?php echo $this->lang->line("Real-time Testing"); ?></h4>
 									<p><?php echo $this->lang->line("Test your chatbot flows instantly with our built-in simulator before going live with customers."); ?></p>
-								</div>
-							</div>
-						</div>
+			        	</div>
+			        </div>
+			    </div>
 
 						<div class="flow-builder-cta wow fadeInUp" data-wow-delay=".8s">
 							<a href="<?php echo site_url('home/sign_up'); ?>" class="main-btn btn-hover <?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>"><?php echo $this->lang->line("Try Flow Builder"); ?></a>
@@ -795,7 +795,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<i class="lni lni-code"></i>
 									<?php echo $this->lang->line("No Coding Required"); ?>
 								</span>
-							</div>
+		</div>
 						</div>
 					</div>
 				</div>
@@ -822,55 +822,55 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<div class="node-header">
 										<i class="lni lni-play"></i>
 										<span><?php echo $this->lang->line("Start Bot Flow"); ?></span>
-									</div>
+			</div>
 									<div class="node-content">
 										<p><?php echo $this->lang->line("Welcome"); ?></p>
 										<small><?php echo $this->lang->line("Initial greeting message"); ?></small>
-									</div>
+						</div>
 									<div class="node-connector right"></div>
-								</div>
+					</div>
 
 								<!-- Message Node -->
 								<div class="flow-node message-node">
 									<div class="node-header">
 										<i class="lni lni-bubble"></i>
 										<span><?php echo $this->lang->line("Message"); ?></span>
-									</div>
+				</div>
 									<div class="node-content">
 										<p><?php echo $this->lang->line("How can I help you today?"); ?></p>
 										<small><?php echo $this->lang->line("User interaction prompt"); ?></small>
-									</div>
+						</div>
 									<div class="node-connector left"></div>
 									<div class="node-connector right"></div>
-								</div>
+						</div>
 
 								<!-- Button Node -->
 								<div class="flow-node button-node">
 									<div class="node-header">
 										<i class="lni lni-hand"></i>
 										<span><?php echo $this->lang->line("Quick Reply"); ?></span>
-									</div>
+						</div>
 									<div class="node-content">
 										<div class="quick-buttons">
 											<button class="quick-btn"><?php echo $this->lang->line("Product Info"); ?></button>
 											<button class="quick-btn"><?php echo $this->lang->line("Support"); ?></button>
 											<button class="quick-btn"><?php echo $this->lang->line("Pricing"); ?></button>
-										</div>
-									</div>
+						</div>
+						</div>
 									<div class="node-connector left"></div>
 									<div class="node-connector right"></div>
-								</div>
+					</div>
 
 								<!-- Condition Node -->
 								<div class="flow-node condition-node">
 									<div class="node-header">
 										<i class="lni lni-direction"></i>
 										<span><?php echo $this->lang->line("Condition"); ?></span>
-									</div>
+					</div>
 									<div class="node-content">
 										<p><?php echo $this->lang->line("User Type"); ?></p>
 										<small><?php echo $this->lang->line("Route based on user data"); ?></small>
-									</div>
+				</div>
 									<div class="node-connector left"></div>
 									<div class="node-connector right"></div>
 									<div class="node-connector bottom"></div>
@@ -936,59 +936,59 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 					<div class="testimonial-carousel-wrapper">
 						<div class="testimonial-carousel swiper-container">
 							<div class="swiper-wrapper">
-								<?php 
-				                	$customerReview = $this->config->item('customer_review');
-					                $ct=0;
-								    foreach($customerReview as $singleReview) : 
-						                $ct++;
-						                $original = $singleReview[2];
-						                $base     = base_url();
-						                if (substr($original, 0, 4) != 'http')   $img = $base.$original;
-						                else $img = $original;			                
-						            	?>
-										<!-- start single testimonial  -->
+							<?php 
+			                	$customerReview = $this->config->item('customer_review');
+				                $ct=0;
+							    foreach($customerReview as $singleReview) : 
+					                $ct++;
+					                $original = $singleReview[2];
+					                $base     = base_url();
+					                if (substr($original, 0, 4) != 'http')   $img = $base.$original;
+					                else $img = $original;			                
+					            	?>
+									<!-- start single testimonial  -->
 										<div class="swiper-slide">
 											<div class="single-testimonial modern-testimonial wow fadeInUp" data-wow-delay=".2s">
 												<div class="testimonial-card">
-													<div class="testimonial-header">
-														<div class="client-info">
-															<div class="client-img">
+										<div class="testimonial-header">
+											<div class="client-info">
+												<div class="client-img">
 																<img src="<?php echo $img; ?>" alt="<?php echo $singleReview[0]; ?>">
 																<div class="verified-badge">
 																	<i class="lni lni-checkmark"></i>
-																</div>
-															</div>
+												</div>
+												</div>
 															<div class="client-details">
 																<h5><?php echo $singleReview[0]; ?></h5>
 																<span class="client-position"><?php echo $singleReview[1]; ?></span>
-																<div class="client-rating">
-																	<span><i class="lni lni-star-filled"></i></span>
-																	<span><i class="lni lni-star-filled"></i></span>
-																	<span><i class="lni lni-star-filled"></i></span>
-																	<span><i class="lni lni-star-filled"></i></span>
-																	<span><i class="lni lni-star-filled"></i></span>
+											<div class="client-rating">
+												<span><i class="lni lni-star-filled"></i></span>
+												<span><i class="lni lni-star-filled"></i></span>
+												<span><i class="lni lni-star-filled"></i></span>
+												<span><i class="lni lni-star-filled"></i></span>
+												<span><i class="lni lni-star-filled"></i></span>
 																	<span class="rating-text">5.0</span>
-																</div>
-															</div>
-														</div>
+											</div>
+										</div>
+										</div>
 														<div class="quote-icon">
 															<i class="lni lni-quotation"></i>
 														</div>
 													</div>
 													
-													<div class="testimonial-content">
-														<p>
-															<?php 
-															    if(strlen($singleReview[3]) > 200 )
-															    {
-															        $str = substr($singleReview[3],0,180);
+										<div class="testimonial-content">
+											<p>
+													<?php 
+													    if(strlen($singleReview[3]) > 200 )
+													    {
+													        $str = substr($singleReview[3],0,180);
 															        echo $str.". . ."."<a class='read-more-link' type='button' data-toggle='modal' data-target='#myModal".$ct."'>".$this->lang->line('Read More')."</a>";
-															    
-															    }
-															    else echo $str = $singleReview[3];		
-															?>
-														</p>
-													</div>
+													    
+													    }
+													    else echo $str = $singleReview[3];		
+													?>
+											</p>
+										</div>
 													
 													<div class="testimonial-footer">
 														<div class="social-proof">
@@ -1002,16 +1002,16 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 												</div>
 											</div>
 										</div> <!-- end single testimonial slide -->
-									<?php endforeach; ?>
-							</div>
+								<?php endforeach; ?>
+						</div>
 							
 							<!-- Navigation buttons -->
 							<div class="swiper-button-next testimonial-next">
 								<i class="lni lni-chevron-right"></i>
-							</div>
+					</div>
 							<div class="swiper-button-prev testimonial-prev">
 								<i class="lni lni-chevron-left"></i>
-							</div>
+				</div>
 							
 							<!-- Pagination -->
 							<div class="swiper-pagination testimonial-pagination"></div>
@@ -1065,7 +1065,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 										<?php if($pack["highlight"]=='1') : ?>
 											<div class="popular-badge">
 												<span><?php echo $this->lang->line("Most Popular"); ?></span>
-											</div>
+										</div>
 										<?php endif; ?>
 										
 										<div class="price-header">
@@ -1081,7 +1081,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 										</div>
 
 										<div class="price-features">
-											<?php 
+										    <?php 
 										        $module_ids=$pack["module_ids"];
 										        $monthly_limit=json_decode($pack["monthly_limit"],true);
 										        $module_names_array=$this->basic->execute_query('SELECT module_name,id FROM modules WHERE FIND_IN_SET(id,"'.$module_ids.'") > 0  ORDER BY module_name ASC');
@@ -1138,7 +1138,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 										            	<i class="lni lni-checkmark-circle"></i>
 										            </div>
 										            <div class="feature-content">
-											            <?php 
+										            <?php 
 											                $limit = $feature['limit'];
 											                if($limit == "0") {
 											                    $limit_display = "<span class='unlimited'>".$this->lang->line("unlimited")."</span>";
@@ -1154,7 +1154,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											            ?>
 											        </div>
 										        </li>
-										        <?php endforeach; ?>
+										    <?php endforeach; ?>
 										        
 										        <?php if($total_features > 5): ?>
 										        <li class="feature-item more-features">
@@ -1167,7 +1167,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 										            </div>
 										        </li>
 										        <?php endif; ?>
-										    </ul>
+										</ul>
 										    
 										    <!-- Collapsible Full Features List -->
 										    <?php if($total_features > 5): ?>
@@ -1251,15 +1251,15 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 	<section id="faq" class="faq-area modern-faq-section pt-130 pb-130">
 		<div class="container">
 			<!-- Section Header -->
-			<div class="row">
+				<div class="row">
 				<div class="col-xl-8 col-lg-10 mx-auto">
 					<div class="section-title text-center mb-80">
 						<h2 class="title wow fadeInUp" data-wow-delay=".2s"><?php echo $this->lang->line("Frequently Asked Questions"); ?></h2>
 						<p class="wow fadeInUp" data-wow-delay=".4s"><?php echo $this->lang->line("Find answers to common questions about chatwiser's AI-powered automation platform."); ?></p>
 					</div>
 				</div>
-			</div>
-
+							</div>
+							    
 			<div class="row justify-content-center">
 				<div class="col-xl-10 col-lg-12">
 					<div class="faq-wrapper modern-faq">
@@ -1273,13 +1273,13 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											<span><?php echo $this->lang->line("How quickly can I see results with chatwiser?"); ?></span>
 											<i class="lni lni-chevron-down"></i>
 										</button>
-									</div>
+							</div>
 									<div id="faq1" class="collapse" aria-labelledby="faq1" data-parent="#modernAccordion">
 										<div class="accordion-content">
 											<?php echo $this->lang->line("Most businesses see immediate improvements in response time once chatwiser is activated. You'll start automating conversations within hours of setup, and typically see 300% faster response rates and increased customer engagement within the first week."); ?>
-										</div>
-									</div>
-								</div>
+						</div>
+					</div>
+						</div>
 
 								<!-- FAQ 2 -->
 								<div class="single-accordion wow fadeInUp" data-wow-delay=".4s">
@@ -1289,13 +1289,13 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											<span><?php echo $this->lang->line("Is my customer data secure?"); ?></span>
 											<i class="lni lni-chevron-down"></i>
 										</button>
-									</div>
+					</div>
 									<div id="faq2" class="collapse" aria-labelledby="faq2" data-parent="#modernAccordion">
 										<div class="accordion-content">
 											<?php echo $this->lang->line("Absolutely. chatwiser uses enterprise-grade security with SSL encryption, GDPR compliance, and bank-level data protection. Your customer conversations are stored securely and never shared with third parties."); ?>
-										</div>
-									</div>
-								</div>
+				</div>
+			</div>
+		</div>
 
 								<!-- FAQ 3 -->
 								<div class="single-accordion wow fadeInUp" data-wow-delay=".5s">
@@ -1343,7 +1343,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											<?php echo $this->lang->line("Currently, chatwiser supports Facebook Messenger and Instagram Direct Messages. WhatsApp Business integration is coming soon. All platforms are managed from one unified dashboard for seamless conversation management."); ?>
 										</div>
 									</div>
-								</div>
+									</div>
 
 								<!-- FAQ 6 -->
 								<div class="single-accordion wow fadeInUp" data-wow-delay=".8s">
@@ -1375,7 +1375,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 											<?php echo $this->lang->line("chatwiser includes smart escalation features that automatically transfer complex inquiries to human agents. You can also set up approval workflows for sensitive topics and train the AI with your specific business information to ensure accurate responses."); ?>
 										</div>
 									</div>
-								</div>
+									</div>
 
 								<!-- FAQ 8 -->
 								<div class="single-accordion wow fadeInUp" data-wow-delay="1s">
@@ -1471,7 +1471,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							</div>
 						</div>
 						
-						<?php 
+                        <?php 
 							if($this->session->userdata('mail_sent') == 1) {
 							echo "<div class='alert alert-success'>".$this->lang->line("We have received your email. We will contact you through email as soon as possible.")."</div>";
 							$this->session->unset_userdata('mail_sent');
@@ -1490,8 +1490,8 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<div class="form-group">
 										<label for="subject"><?php echo $this->lang->line("Subject"); ?></label>
 										<input type="text" class="form-control" required id="subject" <?php echo set_value("subject"); ?> placeholder="<?php echo $this->lang->line("What can we help you with?");?>" name="subject">		
-										<span class="text-danger"><?php echo form_error("subject"); ?></span>							
-									</div>
+									 <span class="text-danger"><?php echo form_error("subject"); ?></span>							
+								</div>
 								</div>
 							</div>
 							
@@ -1507,15 +1507,15 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<div class="form-group">
 										<label for="captcha"><?php echo $this->lang->line("Security Check"); ?></label>
 										<input type="number" class="form-control" step="1" required id="captcha" <?php echo set_value("captcha"); ?> placeholder="<?php echo $contact_num1. "+". $contact_num2." = ?"; ?>" name="captcha">	
-										<span class="text-danger">
-											<?php if(form_error('captcha')) echo form_error('captcha'); 
-											else  
-											{ 
-												echo $this->session->userdata("contact_captcha_error"); 
-												$this->session->unset_userdata("contact_captcha_error"); 
-											} 
-											?>
-										</span>	
+									<span class="text-danger">
+										<?php if(form_error('captcha')) echo form_error('captcha'); 
+										else  
+										{ 
+											echo $this->session->userdata("contact_captcha_error"); 
+											$this->session->unset_userdata("contact_captcha_error"); 
+										} 
+										?>
+									</span>								
 
 										<!-- Trust Indicators -->
 										<div class="form-trust mt-3">
@@ -1523,11 +1523,11 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 												<div class="trust-badge">
 													<i class="lni lni-users"></i>
 													<span><span class="trust-count" data-count="10000">0</span>+ <?php echo $this->lang->line("Users"); ?></span>
-												</div>
+								</div>
 												<div class="trust-badge">
 													<i class="lni lni-star-filled"></i>
 													<span>4.9/5 <?php echo $this->lang->line("Rating"); ?></span>
-												</div>
+							</div>
 											</div>
 										</div>							
 									</div>
@@ -1567,13 +1567,13 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 		<div class="container">
 			<!-- Main Footer Content -->
 			<div class="footer-content">
-				<div class="row">
+			<div class="row">
 					<!-- Brand Column -->
 					<div class="col-xl-4 col-lg-4 col-md-6">
 						<div class="footer-widget brand-widget wow fadeInUp" data-wow-delay=".2s">
 							<div class="footer-logo">
 								<img src="<?php echo base_url();?>assets/img/logo-white.png" alt="chatwiser" class="logo">
-							</div>
+					</div>
 							<p class="brand-description"><?php echo $this->lang->line("Automate your customer conversations with AI-powered chatwiser. Never miss another customer while you sleep."); ?></p>
 							
 							<!-- Trust Badges -->
@@ -1582,7 +1582,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 									<div class="trust-stat">
 										<span class="trust-number"><span class="trust-count" data-count="10000">0</span>+</span>
 										<span class="trust-label"><?php echo $this->lang->line("Active Users"); ?></span>
-									</div>
+				</div>
 									<div class="trust-stat">
 										<span class="trust-number">4.9/5</span>
 										<span class="trust-label"><?php echo $this->lang->line("Rating"); ?></span>
@@ -1598,7 +1598,7 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							<h4 class="widget-title"><?php echo $this->lang->line("Product"); ?></h4>
 							<ul class="footer-links">
 								<li><a href="#feature" class="page-scroll"><?php echo $this->lang->line("Features"); ?></a></li>
-								<li><a href="#pricing" class="page-scroll"><?php echo $this->lang->line("Pricing"); ?></a></li>
+							<li><a href="#pricing" class="page-scroll"><?php echo $this->lang->line("Pricing"); ?></a></li>
 								<li><a href="#faq" class="page-scroll"><?php echo $this->lang->line("FAQ"); ?></a></li>
 								<li><a href="<?php echo site_url('home/sign_up'); ?>" class="<?php if($this->config->item('enable_signup_form') =='0') echo "d-none"; ?>"><?php echo $this->lang->line("Sign Up"); ?></a></li>
 							</ul>
@@ -1611,12 +1611,12 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 							<h4 class="widget-title"><?php echo $this->lang->line("Support"); ?></h4>
 							<ul class="footer-links">
 								<li><a href="#contact" class="page-scroll"><?php echo $this->lang->line("Contact Us"); ?></a></li>
-								<li><a href="<?php echo base_url('home/privacy_policy'); ?>" target="_blank"><?php echo $this->lang->line("Privacy Policy"); ?></a></li>
-								<li><a href="<?php echo base_url('home/terms_use'); ?>" target="_blank"><?php echo $this->lang->line("Terms of Service"); ?></a></li>
-								<li><a href="<?php echo base_url('home/gdpr'); ?>" target="_blank"><?php echo $this->lang->line("GDPR Compliant"); ?></a></li>
-							</ul>
-						</div>
+							<li><a href="<?php echo base_url('home/privacy_policy'); ?>" target="_blank"><?php echo $this->lang->line("Privacy Policy"); ?></a></li>
+							<li><a href="<?php echo base_url('home/terms_use'); ?>" target="_blank"><?php echo $this->lang->line("Terms of Service"); ?></a></li>
+							<li><a href="<?php echo base_url('home/gdpr'); ?>" target="_blank"><?php echo $this->lang->line("GDPR Compliant"); ?></a></li>	
+						</ul>
 					</div>
+				</div>
 
 					<!-- Contact Info -->
 					<div class="col-xl-4 col-lg-4 col-md-6">
@@ -1628,23 +1628,23 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 								<div class="contact-item">
 									<div class="contact-icon">
 										<i class="lni lni-envelope"></i>
-									</div>
+					</div>
 									<div class="contact-details">
 										<span class="contact-label"><?php echo $this->lang->line("Email"); ?></span>
 										<a href="mailto:<?php echo $this->config->item('institute_email'); ?>" class="contact-value"><?php echo $this->config->item('institute_email'); ?></a>
-									</div>
-								</div>
+				</div>				
+			</div>
 								<?php endif; ?>
 
 								<?php if(!empty($this->config->item('institute_mobile'))): ?>
 								<div class="contact-item">
 									<div class="contact-icon">
 										<i class="lni lni-phone"></i>
-									</div>
+			</div>
 									<div class="contact-details">
 										<span class="contact-label"><?php echo $this->lang->line("Phone"); ?></span>
 										<a href="tel:<?php echo $this->config->item('institute_mobile'); ?>" class="contact-value"><?php echo $this->config->item('institute_mobile'); ?></a>
-									</div>
+		</div>
 								</div>
 								<?php endif; ?>
 
@@ -1697,8 +1697,8 @@ Description: This is a default theme provided by the Author of ChatPion. We high
 					<div class="col-md-6">
 						<div class="copyright">
 							<p>&copy; <?php echo date('Y'); ?> <a href="<?php echo site_url(); ?>"><?php echo $this->config->item("institute_address1") ? $this->config->item("institute_address1") : 'chatwiser'; ?></a>. <?php echo $this->lang->line("All rights reserved."); ?></p>
-						</div>
-					</div>
+	        </div>
+	    </div>
 					<div class="col-md-6">
 						<div class="footer-security">
 							<div class="security-badges">
