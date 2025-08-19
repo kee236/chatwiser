@@ -3,10 +3,10 @@
   <!-- Branding Section -->
   <div class="brand-section">
     <div class="logo-container">
-      <div class="logo-icon">
-        <img src="<?php echo base_url(); ?>assets/img/logo.png" alt="<?php echo $this->config->item('product_name');?>" class="logo-image">
+      <div class="logo-icon px-2">
+        <img src="<?php echo base_url(); ?>assets/img/favicon-white.png" alt="<?php echo $this->config->item('product_name');?>" class="logo-image">
       </div>
-      <div class="brand-text">
+      <div class="brand-text d-none">
         <h1 class="brand-name"><?php echo $this->config->item('product_name');?></h1>
         <p class="brand-tagline">Your Social Campaigns</p>
       </div>
