@@ -30,15 +30,70 @@
 	padding-left: 20px !important;
 }
 </style>
+
+<!-- Chatwiser Connect Accounts Enhanced Styling -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/chatwiser-connect-accounts.css">
+
 <?php $fb_login_button=str_replace("ThisIsTheLoginButtonForFacebook",$this->lang->line("Login with Facebook"), $fb_login_button); ?>
 
-<section class="section">
-	<div class="section-header">
-	  <h1><i class="fa fa-facebook-official"></i> <?php echo $this->lang->line("Connect Facebook & Instagram") ?></h1>
-	  <!-- <div class="section-header-breadcrumb">
-	    <div class="breadcrumb-item"><?php echo $this->lang->line("System"); ?></div>
-	    <div class="breadcrumb-item"><?php echo $page_title; ?></div>
-	  </div> -->
+<section class="section accounts-import-section">
+	<div class="section-header chatwiser-connect-header">
+		<div class="header-content">
+			<div class="header-main">
+				<div class="header-icon">
+					<i class="fab fa-facebook-square"></i>
+					<i class="fab fa-instagram"></i>
+				</div>
+				<div class="header-text">
+					<h1 class="header-title">
+						<?php echo $this->lang->line("Connect Facebook & Instagram") ?>
+						<span class="header-badge"><?php echo $this->lang->line("Social Hub"); ?></span>
+					</h1>
+					<p class="header-subtitle">
+						<?php echo $this->lang->line("Connect your social media accounts to unlock powerful automation, messaging, and engagement features"); ?>
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Enhanced Status Bar -->
+		<div class="status-bar">
+			<div class="status-indicator">
+				<div class="indicator-icon">
+					<i class="fas fa-shield-check"></i>
+				</div>
+				<div class="indicator-content">
+					<span class="indicator-title"><?php echo $this->lang->line("Secure Connection"); ?></span>
+					<span class="indicator-subtitle"><?php echo $this->lang->line("Your data is protected with enterprise-grade security"); ?></span>
+				</div>
+			</div>
+			<div class="connection-flow">
+				<div class="flow-step active">
+					<div class="step-icon"><i class="fas fa-user-check"></i></div>
+					<span class="step-label"><?php echo $this->lang->line("Authenticate"); ?></span>
+				</div>
+				<div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+				<div class="flow-step">
+					<div class="step-icon"><i class="fas fa-download"></i></div>
+					<span class="step-label"><?php echo $this->lang->line("Import"); ?></span>
+				</div>
+				<div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+				<div class="flow-step">
+					<div class="step-icon"><i class="fas fa-rocket"></i></div>
+					<span class="step-label"><?php echo $this->lang->line("Activate"); ?></span>
+				</div>
+			</div>
+			<div class="security-badges">
+				<div class="badge-item">
+					<i class="fab fa-facebook"></i>
+					<span><?php echo $this->lang->line("Official API"); ?></span>
+				</div>
+				<div class="badge-item">
+					<i class="fas fa-lock"></i>
+					<span><?php echo $this->lang->line("SSL Encrypted"); ?></span>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<?php 
@@ -82,115 +137,222 @@
 	    <div class="clearfix"></div>
 
 		<?php if($existing_accounts != '0') : ?>		
-			<div>			
+		<div class="accounts-import-section">
+			<div class="accounts-container">			
 				<div class="row">
 				<?php $i=0; foreach($existing_accounts as $value) : ?>
 					<div class="col-12">
 						
 						<?php $profile_picture="https://graph.facebook.com/me/picture?access_token={$value['user_access_token']}&width=150&height=150"; ?>
 
-				    	<div class="card profile-widget my-0">
-				    		<div class="profile-widget-header">
-    		                    <img src="<?php echo $profile_picture; ?>" class="img-thumbnail profile-widget-picture">
-    		                    <div class="profile-widget-items">
-    		                      <div class="profile-widget-item">
-    		                        <div class="profile-widget-item-label mb-2">
-    		                        	<?php echo count($value['page_list']); ?> <?php echo $this->lang->line("pages"); ?> 
+				    	<div class="card enhanced-account-card">
+				    		<div class="account-card-header">
+				    			<div class="account-profile-section">
+				    				<div class="profile-avatar">
+				    					<img src="<?php echo $profile_picture; ?>" class="account-avatar-image">
+				    					<div class="avatar-status-indicator active">
+				    						<i class="fas fa-check"></i>
+				    					</div>
+				    				</div>
+				    				<div class="profile-info">
+				    					<div class="account-name">
+				    						<h4 class="user-name"><?php echo $value['name']; ?></h4>
+				    						<span class="account-type"><?php echo $this->lang->line("Facebook Account"); ?></span>
+				    					</div>
+				    					<div class="account-stats">
+				    						<div class="stat-item">
+				    							<i class="fab fa-facebook-square"></i>
+				    							<span class="stat-value"><?php echo count($value['page_list']); ?></span>
+				    							<span class="stat-label"><?php echo $this->lang->line("pages"); ?></span>
+				    						</div>
     		                        	<?php if($this->config->item('facebook_poster_group_enable_disable')=='1') :?>
-    		                        	& <?php echo count($value['group_list']); ?> <?php echo $this->lang->line("groups"); ?>
+				    						<div class="stat-item">
+				    							<i class="fas fa-users"></i>
+				    							<span class="stat-value"><?php echo count($value['group_list']); ?></span>
+				    							<span class="stat-label"><?php echo $this->lang->line("groups"); ?></span>
+				    						</div>
 	    		                        <?php endif; ?>
     		                        </div>
-    		                        <div class="profile-widget-item-value">
-    		                        	  <?php  echo $value['name']; ?>
-    		                        	  <input type="text" class="form-control float-right mr-3" style="width:150px;margin-top: -15px" onkeyup="search_in_class(this,'page_list_ul')" autofocus placeholder="<?php echo $this->lang->line('Search'); ?>...">
-
-    		                        	  <button class="delete_account btn btn-outline-danger btn-sm ml-2" table_id="<?php echo $value['userinfo_table_id']; ?>" data-toggle="tooltip" data-placement="bottom" title="<?php echo $this->lang->line("Do you want to remove this account from our database? you can import again.");?>"><i class="fas fa-dumpster"></i> <?php echo $this->lang->line("Unlink");?></button>
+				    				</div>
+				    			</div>
+				    			<div class="account-actions">
+				    				<div class="search-section">
+				    					<div class="search-wrapper">
+				    						<i class="fas fa-search"></i>
+				    						<input type="text" class="enhanced-search-input" onkeyup="search_in_class(this,'page_list_ul')" placeholder="<?php echo $this->lang->line('Search pages'); ?>...">
+				    					</div>
+				    				</div>
+				    				<div class="action-buttons">
+				    					<button class="action-btn unlink-btn delete_account" table_id="<?php echo $value['userinfo_table_id']; ?>" data-toggle="tooltip" title="<?php echo $this->lang->line("Do you want to remove this account from our database? you can import again.");?>">
+				    						<i class="fas fa-unlink"></i>
+				    						<span><?php echo $this->lang->line("Unlink");?></span>
+				    					</button>
+				    				</div>
+				    			</div>
     		                        	</div>
     		                        </div>
 
+						<div class="card enhanced-pages-card">
+						  <div class="pages-card-header">
+						    <div class="pages-header-content">
+						    	<div class="pages-title-section">
+						    		<h5 class="pages-title">
+						    			<i class="fab fa-facebook-square mr-2"></i>
+						    			<?php echo $this->lang->line('Connected Pages') ?>
+						    			<span class="pages-count-badge"><?php echo count($value['page_list']); ?></span>
+						    		</h5>
+						    		<p class="pages-subtitle"><?php echo $this->lang->line("Manage your Facebook pages and their bot connections"); ?></p>
+						    	</div>
+						    	<div class="pages-actions">
+						    		<button class="pages-action-btn" data-toggle="tooltip" title="<?php echo $this->lang->line('Refresh all pages'); ?>">
+						    			<i class="fas fa-sync-alt"></i>
+						    		</button>
     		                    </div>
     		                </div>
 
+						    <!-- Status Alerts -->
+						    <?php if($value['need_to_delete'] == 1) : ?>
+						    <div class="status-alert danger">
+						    	<div class="alert-icon">
+						    		<i class="fas fa-exclamation-triangle"></i>
+						    	</div>
+						    	<div class="alert-content">
+						    		<strong>Action Required:</strong>
+						    		<span><?php echo $this->lang->line('you have to delete this account.'); ?></span>
+						    	</div>
+						    </div>
+						    <?php endif; ?>
+						    
+						    <?php if($value['validity'] == 'no') : ?>
+						    <div class="status-alert danger">
+						    	<div class="alert-icon">
+						    		<i class="fas fa-clock"></i>
+						    	</div>
+						    	<div class="alert-content">
+						    		<strong>Session Expired:</strong>
+						    		<span><?php echo $this->lang->line('your login validity has been expired.'); ?></span>
+						    	</div>
+						    </div>
+						    <?php endif; ?>
 			    	  	</div>
 						
-						<div class="card bg-body no_shadow">
-						  <div class="card-body p-0">
-						    <div class="summary">
-						    	<?php
-						    		if($value['need_to_delete'] == 1)
-						    		{
-						    			echo "<div class='alert alert-danger text-center'><i class='fa fa-close'></i> ".$this->lang->line('you have to delete this account.')."</div>";
-						    		} 
-						    	?>
-						    	<?php 
-						    		if($value['validity'] == 'no')
-						    		{
-						    			echo "<div class='alert alert-danger text-center'><i class='fa fa-close'></i> ".$this->lang->line('your login validity has been expired.')."</div>";
-						    		}
-						    	?>
-						     <div class="summary-item">
-						      	<!-- page lists -->
-						        <h6 class="mt-3"><?php echo $this->lang->line('Page List') ?> <span class="text-muted">(<?php echo count($value['page_list']); ?> <?php echo $this->lang->line("pages"); ?>)</span></h6>
-						      	<div style="max-height: 610px;overflow-y:auto;" class="nicescroll row">								        
+						  <div class="pages-card-body">
+						    <div class="pages-grid-container">
+						      	<div class="pages-grid">								        
 						        	<?php 
 						        		foreach($value['page_list'] as $page_info) : ?>
 						        		<div class="col-12 col-md-6 col-lg-4 page_list_ul">
-							        		<div class="card author-box">
-			        		                  <div class="card-body pl-3 pr-2">
-			        		                    <div class="author-box-left">
-			        		                      <a target="_BLANK" href="https://facebook.com/<?php echo $page_info['page_id'];?>"><img alt="image" src="<?php echo $page_info['page_profile'];?>" class="rounded-circle author-box-picture mt-2" style="width: 63px !important;"></a>
-			        		                      <div class="clearfix"></div>
-			        		                      <a target="_BLANK" class="btn btn-outline-primary mt-3" href="<?php echo base_url('messenger_bot_analytics/result/').$page_info['id'];?>" class="btn"><i class="fas fa-chart-pie"></i> <?php echo $this->lang->line("Analytics");?></a>
+							        		<div class="card enhanced-page-card">
+							        			<div class="page-card-header">
+							        				<div class="page-avatar-section">
+							        					<div class="page-avatar">
+							        						<img src="<?php echo $page_info['page_profile'];?>" class="page-avatar-image">
+							        						<div class="page-status-indicator <?php echo ($page_info['bot_enabled'] == '1') ? 'active' : 'inactive'; ?>">
+							        							<i class="fas <?php echo ($page_info['bot_enabled'] == '1') ? 'fa-robot' : 'fa-power-off'; ?>"></i>
+							        						</div>
+							        					</div>
+							        					<div class="page-info">
+							        						<h6 class="page-name">
+							        							<a href="https://facebook.com/<?php echo $page_info['page_id'];?>" target="_BLANK" class="page-link">
+							        								<?php echo $page_info['page_name']; ?>
+							        							</a>
+							        						</h6>
+							        						<div class="page-meta">
+							        							<div class="page-email">
+							        								<i class="fas fa-at"></i>
+							        								<span><?php echo $page_info['page_email']; ?></span>
+							        							</div>
+							        							<div class="page-id">
+							        								<i class="fas fa-hashtag"></i>
+							        								<span><?php echo $page_info['page_id']; ?></span>
 			        		                    </div>
-			        		                    <div class="author-box-details">
-			        		                      <div class="author-box-name">
-			        		                        <a target="_BLANK" href="https://facebook.com/<?php echo $page_info['page_id'];?>" ><?php echo $page_info['page_name']; ?></a>
 			        		                      </div>
-			        		                      <div class="author-box-job">
-			        		                      	<i class="fas fa-at"></i> <?php echo $page_info['page_email']; ?>
 			        		                  	  </div>
-			        		                      <div class="author-box-job">
-			        		                      	<small><i class="fas fa-circle text-success"></i> <?php echo $page_info['page_id']; ?></small>
 			        		                      </div>
+							        				
 			        		                      <?php if(isset($page_info['has_instagram']) && $page_info['has_instagram'] == '1') : ?>
-								              		<div class="mt-2">
-							              				<i class="fab fa-instagram instagram"></i> 
-							              				<a class="instagram" href="https://www.instagram.com/<?php echo $page_info['insta_username']; ?>" target="_BLANK"><?php echo $page_info['insta_username']; ?></a> 
-							              				<i class="fas fa-sync-alt update_account text-warning pl-3" table_id="<?php echo $page_info['id'];?>" title="<?php echo $this->lang->line("Sync Instagram Account");?>" data-placement="right" data-toggle="tooltip"></i>
-							              				<!-- <b><?php echo $this->lang->line('Media'); ?></b> : <span id="media_count_<?php echo $page_info['id'];?>"><?php echo custom_number_format($page_info['insta_media_count']); ?></span> | 
-							              				<b><?php echo $this->lang->line('Followers'); ?></b> : <span id="follower_count_<?php echo $page_info['id'];?>"><?php echo custom_number_format($page_info['insta_followers_count']); ?></span> -->
+							        				<div class="instagram-section">
+							        					<div class="instagram-info">
+							        						<div class="instagram-badge">
+							        							<i class="fab fa-instagram"></i>
+							        							<span><?php echo $this->lang->line("Instagram Connected"); ?></span>
+							        						</div>
+							        						<div class="instagram-username">
+							        							<a href="https://www.instagram.com/<?php echo $page_info['insta_username']; ?>" target="_BLANK" class="instagram-link">
+							        								@<?php echo $page_info['insta_username']; ?>
+							        							</a>
+							        							<button class="sync-instagram-btn update_account fas fa-sync-alt" table_id="<?php echo $page_info['id'];?>" title="<?php echo $this->lang->line("Sync Instagram Account");?>" data-toggle="tooltip">
+							        								<!-- <i class="fas fa-sync-alt"></i> -->
+							        							</button>
+							        						</div>
+							        					</div>
 								              		</div>
 									              <?php endif; ?>
-			        		                     
-			        		                      <div class="mt-3"></div>
-
-	      						              		<?php if($page_info['bot_enabled'] == '1') :?>
-	      						              			<button style="margin-right:5px !important;" class="btn-sm btn btn-circle btn-outline-danger delete_full_bot" bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" already_disabled="no" title="<?php echo $this->lang->line("Delete Bot Connection & all settings.");?>" data-placement="right" data-toggle="tooltip">
-	      			              			              	<i class="fas fa-eraser"></i> 
+							        			</div>
+							        			
+							        			<div class="page-card-body">
+							        				<div class="page-actions-section">
+							        					<div class="quick-actions">
+							        						<a href="<?php echo base_url('messenger_bot_analytics/result/').$page_info['id'];?>" target="_BLANK" class="quick-action-btn analytics-btn">
+							        							<i class="fas fa-chart-pie"></i>
+							        							<span><?php echo $this->lang->line("Analytics");?></span>
+							        						</a>
+							        						<a href="https://facebook.com/<?php echo $page_info['page_id'];?>" target="_BLANK" class="quick-action-btn visit-btn">
+							        							<i class="fas fa-external-link-alt"></i>
+							        							<span><?php echo $this->lang->line("Visit Page"); ?></span>
+							        						</a>
+							        					</div>
+							        					
+							        					<div class="bot-controls">
+							        						<div class="bot-status">
+							        							<span class="status-label"><?php echo $this->lang->line("Bot Status"); ?>:</span>
+							        							<span class="status-value <?php echo ($page_info['bot_enabled'] == '1') ? 'active' : 'inactive'; ?>">
+							        								<?php echo ($page_info['bot_enabled'] == '1') ? $this->lang->line('Active') : $this->lang->line('Inactive'); ?>
+							        							</span>
+							        						</div>
+							        						
+							        						<div class="bot-action-buttons">
+							        							<?php if($page_info['bot_enabled']=='0') : ?>
+							        								<button class="bot-action-btn enable-btn enable_webhook" restart='0' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" title="<?php echo $this->lang->line("Enable Bot Connection");?>" data-toggle="tooltip">
+							        									<i class="fas fa-play"></i>
+							        									<span><?php echo $this->lang->line("Enable Bot"); ?></span>
+							        								</button>
+							        							<?php elseif($page_info['bot_enabled']=='1') : ?>
+							        								<button class="bot-action-btn disable-btn disable_webhook" restart='0' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" title="<?php echo $this->lang->line("Disable Bot Connection");?>" data-toggle="tooltip">
+							        									<i class="fas fa-pause"></i>
+							        									<span><?php echo $this->lang->line("Disable Bot"); ?></span>
 	      			              		              	</button>
-	      			              		            <?php elseif($page_info['bot_enabled'] == '2'): ?>
-	      			              		            	<button style="margin-right:5px !important;" class="btn-sm btn btn-circle btn-outline-danger delete_full_bot" bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" already_disabled="yes" title="<?php echo $this->lang->line("Delete Bot Connection & all settings.");?>" data-placement="right" data-toggle="tooltip">
-	      			              			              	<i class="fas fa-eraser"></i> 
-	      			              		              	</button>
+							        							<?php else : ?>
+							        								<button class="bot-action-btn restart-btn enable_webhook" restart='1' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" title="<?php echo $this->lang->line("Re-start Bot Connection");?>" data-toggle="tooltip">
+							        									<i class="fas fa-redo"></i>
+							        									<span><?php echo $this->lang->line("Restart Bot"); ?></span>
+							        								</button>
 	      						              		<?php endif; ?>
 
-	                    		                      	<?php if($page_info['bot_enabled']=='0') : ?>
-	                    									<button style="margin-right:5px !important;"  restart='0' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" class="btn btn-sm btn-outline-primary btn-circle enable_webhook" title="<?php echo $this->lang->line("Enable Bot Connection");?>" data-placement="left" data-toggle="tooltip"><i class="fas fa-plug"></i></button>
-	                    								<?php elseif($page_info['bot_enabled']=='1') : ?>
-	                    									<button style="margin-right:5px !important;"  restart='0' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" class="btn btn-sm btn-outline-dark btn-circle disable_webhook" title="<?php echo $this->lang->line("Disable Bot Connection");?>" data-placement="left" data-toggle="tooltip"><i class="fas fa-power-off"></i></button>
-	                    								<?php else : ?>
-	                    									<button style="margin-right:5px !important;"  restart='1' bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" class="btn btn-sm btn-outline-primary btn-circle enable_webhook" title="<?php echo $this->lang->line("Re-start Bot Connection");?>" data-placement="left" data-toggle="tooltip"><i class="fas fa-toggle-on"></i></button>
+							        							<?php if($page_info['bot_enabled'] == '1' || $page_info['bot_enabled'] == '2') :?>
+							        								<button class="bot-action-btn delete-bot-btn delete_full_bot" bot-enable="<?php echo $page_info['id'];?>" id="bot-<?php echo $page_info['id'];?>" already_disabled="<?php echo ($page_info['bot_enabled'] == '1') ? 'no' : 'yes'; ?>" title="<?php echo $this->lang->line("Delete Bot Connection & all settings.");?>" data-toggle="tooltip">
+							        									<i class="fas fa-robot"></i>
+							        									<span><?php echo $this->lang->line("Reset Bot"); ?></span>
+							        								</button>
 	                    								<?php endif; ?>									              	  											
+							        						</div>
+							        					</div>
 	      											
+							        					<div class="page-management">
+							        						<div class="management-actions">
 	      											<?php if($page_info['bot_enabled'] == 1) :?>
-	      												<button style="margin-right:5px !important;" class="btn-sm btn btn-outline-danger btn-circle right-button disabled" table_id="<?php echo $page_info['id']; ?>" title="<?php echo $this->lang->line("To enable delete button, first disable bot connection.");?>" data-placement="right" data-toggle="tooltip">
-	      		              			              	  	<i class="fas fa-trash-alt"></i> 
-	      		              		              	  	</button>
+							        															        								<button class="management-btn delete-disabled" table_id="<?php echo $page_info['id']; ?>" title="<?php echo $this->lang->line("To enable delete button, first disable bot connection.");?>" data-toggle="tooltip" disabled>
+							        									<i class="fas fa-trash-alt"></i>
+							        									<span><?php echo $this->lang->line("Delete Page"); ?></span>
+							        								</button>
 	      											<?php else : ?>
-	      	              								<button style="margin-right:5px !important;" class="btn-sm btn btn-outline-danger btn-circle page_delete" table_id="<?php echo $page_info['id']; ?>" title="<?php echo $this->lang->line("Delete this page from database.");?>" data-placement="right" data-toggle="tooltip">
+							        								<button class="management-btn delete-page-btn page_delete" table_id="<?php echo $page_info['id']; ?>" title="<?php echo $this->lang->line("Delete this page from database.");?>" data-toggle="tooltip">
 	      			              			              	  	<i class="fas fa-trash-alt"></i> 
+							        									<span>Delete Page</span>
 	      			              		              	</button>            	  	
 	      											<?php endif; ?>
+							        						</div>
+							        					</div>
 			        		                    </div>
 			        		                  </div>
 			        		                </div>
@@ -232,7 +394,7 @@
 								<?php endif; ?>
 						      </div>
 						    </div>
-						  </div>Sheet Title
+						  </div>
 						</div>
 
 
@@ -244,6 +406,7 @@
 						echo "</div><div class='row'>";
 					endforeach;				
 				?>
+				</div> 
 				</div> 
 			</div>
 		<?php else : ?>

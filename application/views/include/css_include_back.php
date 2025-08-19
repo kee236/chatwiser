@@ -84,6 +84,9 @@ else
 <!-- Custom -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css">
 
+<!-- Chatwiser Dashboard Content CSS - Load Last for Priority -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/chatwiser-dashboard-content.css">
+
 <?php if($is_rtl) { ?>
 	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/rtl.css">
 <?php } ?>

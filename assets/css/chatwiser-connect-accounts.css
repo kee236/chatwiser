@@ -1,0 +1,1281 @@
+/* Chatwiser Connect Accounts - Enhanced Styling */
+
+/* Root Variables */
+:root {
+    --facebook-blue: #1877F2;
+    --instagram-pink: #E4405F;
+    --instagram-purple: #833AB4;
+    --instagram-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    --facebook-gradient: linear-gradient(135deg, #1877F2 0%, #166FE5 100%);
+    --success-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    --primary-gradient: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    --purple-gradient: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    --security-green: #10B981;
+    --white: #FFFFFF;
+    --text-dark: #1F2937;
+    --text-muted: #6B7280;
+    --border-light: #E5E7EB;
+    --bg-light: #F9FAFB;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Connect Header */
+.chatwiser-connect-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    border-radius: 0 0 30px 30px !important;
+    color: var(--white) !important;
+    padding: 40px 30px 0 30px !important;
+    margin-bottom: 40px !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.chatwiser-connect-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chatwiser-connect-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Header Content */
+.header-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-bottom: 30px !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+.header-main {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    flex: 1 !important;
+}
+
+.header-icon {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.header-icon i {
+    font-size: 32px !important;
+    color: var(--white) !important;
+    transition: all 0.3s ease !important;
+}
+
+.header-icon i.fab.fa-facebook-square {
+    color: #1877F2 !important;
+    text-shadow: 0 0 20px rgba(24, 119, 242, 0.5) !important;
+}
+
+.header-icon i.fab.fa-instagram {
+    background: var(--instagram-gradient) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    text-shadow: 0 0 20px rgba(228, 64, 95, 0.5) !important;
+}
+
+.header-text {
+    flex: 1 !important;
+}
+
+.header-title {
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    color: var(--white) !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    flex-wrap: wrap !important;
+}
+
+.header-badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: var(--white) !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.header-subtitle {
+    font-size: 18px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 0 !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+}
+
+
+
+/* Enhanced Status Bar */
+.status-bar {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 24px 30px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+.status-indicator {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.indicator-icon {
+    width: 40px !important;
+    height: 40px !important;
+    background: var(--success-gradient) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--white) !important;
+    font-size: 18px !important;
+}
+
+.indicator-content {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.indicator-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: var(--white) !important;
+    margin-bottom: 2px !important;
+}
+
+.indicator-subtitle {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 400 !important;
+}
+
+/* Connection Flow */
+.connection-flow {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.flow-step {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.flow-step.active .step-icon {
+    background: var(--success-gradient) !important;
+    color: var(--white) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+.step-icon {
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
+
+.step-label {
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.flow-arrow {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 12px !important;
+}
+
+/* Security Badges */
+.security-badges {
+    display: flex !important;
+    gap: 12px !important;
+}
+
+.badge-item {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: var(--white) !important;
+    padding: 8px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.badge-item i.fab.fa-facebook {
+    color: #1877F2 !important;
+}
+
+.badge-item i.fas.fa-lock {
+    color: #10B981 !important;
+}
+
+/* Enhanced Alert Styles */
+.alert.alert-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    border-radius: 16px !important;
+    color: #047857 !important;
+    padding: 20px 24px !important;
+    margin-bottom: 30px !important;
+}
+
+.alert.alert-success h4 {
+    color: #047857 !important;
+    font-weight: 700 !important;
+    margin-bottom: 8px !important;
+}
+
+.alert.alert-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    border-radius: 16px !important;
+    color: #B91C1C !important;
+    padding: 20px 24px !important;
+    margin-bottom: 30px !important;
+}
+
+.alert.alert-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%) !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+    border-radius: 16px !important;
+    color: #92400E !important;
+    padding: 20px 24px !important;
+    margin-bottom: 30px !important;
+    text-align: center !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .header-title {
+        font-size: 32px !important;
+    }
+    
+    .header-subtitle {
+        font-size: 16px !important;
+    }
+    
+    .status-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    
+    .connection-flow {
+        justify-content: center !important;
+    }
+    
+    .security-badges {
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .chatwiser-connect-header {
+        padding: 30px 20px 0 20px !important;
+        border-radius: 0 0 20px 20px !important;
+    }
+    
+    .header-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+    }
+    
+    .header-main {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 16px !important;
+    }
+    
+    .header-title {
+        font-size: 28px !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .header-subtitle {
+        font-size: 14px !important;
+        text-align: center !important;
+    }
+    
+
+    
+    .status-bar {
+        padding: 20px 16px !important;
+    }
+    
+    .status-indicator {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 8px !important;
+    }
+    
+    .connection-flow {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    
+    .flow-step {
+        flex-direction: row !important;
+        gap: 4px !important;
+    }
+    
+    .step-icon {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 12px !important;
+    }
+    
+    .step-label {
+        font-size: 10px !important;
+    }
+    
+    .security-badges {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 8px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 24px !important;
+    }
+    
+    .header-icon {
+        padding: 16px !important;
+    }
+    
+    .header-icon i {
+        font-size: 28px !important;
+    }
+    
+    .stat-item,
+    .sync-indicator {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+    
+    .help-btn {
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+    }
+    
+    .flow-step {
+        display: none !important;
+    }
+    
+    .flow-step:first-child {
+        display: flex !important;
+    }
+    
+    .flow-arrow {
+        display: none !important;
+    }
+    
+    /* Account Details Mobile Responsive */
+    .accounts-import-section .account-card-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+        padding: 20px 16px !important;
+    }
+    
+    .accounts-import-section .account-profile-section {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 16px !important;
+    }
+    
+    .accounts-import-section .account-stats {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+    }
+    
+    .accounts-import-section .account-actions {
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    .accounts-import-section .enhanced-search-input {
+        width: 100% !important;
+        max-width: 280px !important;
+    }
+    
+    .accounts-import-section .action-buttons {
+        width: 100% !important;
+        justify-content: center !important;
+        gap: 12px !important;
+    }
+    
+    .accounts-import-section .pages-card-header {
+        padding: 20px 16px !important;
+    }
+    
+    .accounts-import-section .pages-header-content {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    
+    .accounts-import-section .pages-actions {
+        justify-content: center !important;
+    }
+    
+    .accounts-import-section .pages-card-body {
+        padding: 20px 16px !important;
+    }
+    
+    .accounts-import-section .pages-grid-container {
+        padding: 16px !important;
+    }
+    
+    .accounts-import-section .pages-grid {
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+    
+    .accounts-import-section .page-card-header {
+        padding: 16px !important;
+    }
+    
+    .accounts-import-section .page-avatar-section {
+        gap: 12px !important;
+    }
+    
+    .accounts-import-section .instagram-section {
+        padding: 10px 12px !important;
+    }
+    
+    .accounts-import-section .page-card-body {
+        padding: 16px !important;
+    }
+    
+    .accounts-import-section .bot-action-buttons {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+    
+    .accounts-import-section .bot-action-btn {
+        flex: none !important;
+        width: 100% !important;
+    }
+}
+
+/* Animation and Transitions */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.chatwiser-connect-header {
+    animation: fadeInUp 0.6s ease-out !important;
+}
+
+.flow-step.active {
+    animation: pulse 2s infinite !important;
+}
+
+/* Scope all styles to accounts-import-section */
+.accounts-import-section .accounts-container {
+    padding: 0 15px !important;
+}
+
+.accounts-import-section .enhanced-account-card {
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-lg) !important;
+    overflow: hidden !important;
+    margin-bottom: 30px !important;
+    transition: all 0.3s ease !important;
+}
+
+.accounts-import-section .enhanced-account-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.accounts-import-section .account-card-header {
+    background: linear-gradient(135deg, #1877F2 0%, #166FE5 100%) !important;
+    color: var(--white) !important;
+    padding: 24px 30px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+.accounts-import-section .account-profile-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+    flex: 1 !important;
+}
+
+.accounts-import-section .profile-avatar {
+    position: relative !important;
+    display: inline-block !important;
+}
+
+.accounts-import-section .account-avatar-image {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    object-fit: cover !important;
+    transition: all 0.3s ease !important;
+}
+
+.accounts-import-section .avatar-status-indicator {
+    position: absolute !important;
+    bottom: 2px !important;
+    right: 2px !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    background: #10B981 !important;
+    border: 2px solid var(--white) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 10px !important;
+    color: var(--white) !important;
+}
+
+.accounts-import-section .profile-info {
+    flex: 1 !important;
+}
+
+.accounts-import-section .account-name {
+    margin-bottom: 12px !important;
+}
+
+.accounts-import-section .user-name {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: var(--white) !important;
+    margin-bottom: 4px !important;
+}
+
+.accounts-import-section .account-type {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+}
+
+.accounts-import-section .account-stats {
+    display: flex !important;
+    gap: 20px !important;
+    align-items: center !important;
+}
+
+.accounts-import-section .account-stats .stat-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.accounts-import-section .account-stats .stat-item i {
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.accounts-import-section .stat-value {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: var(--white) !important;
+    -webkit-text-fill-color: unset !important;
+    background: unset !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+}
+
+.accounts-import-section .account-stats .stat-value {
+    color: var(--white) !important;
+    -webkit-text-fill-color: unset !important;
+    background: unset !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+}
+
+.accounts-import-section .stat-label {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.accounts-import-section .account-stats .stat-label {
+    color: var(--white) !important;
+}
+
+.accounts-import-section .account-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-end !important;
+}
+
+.accounts-import-section .search-section {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.accounts-import-section .search-wrapper {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.accounts-import-section .search-wrapper i {
+    position: absolute !important;
+    left: 12px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 14px !important;
+    z-index: 2 !important;
+}
+
+.accounts-import-section .enhanced-search-input {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 20px !important;
+    padding: 8px 16px 8px 36px !important;
+    color: var(--white) !important;
+    font-size: 14px !important;
+    width: 200px !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.3s ease !important;
+}
+
+.accounts-import-section .enhanced-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.accounts-import-section .enhanced-search-input:focus {
+    outline: none !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+.accounts-import-section .action-buttons {
+    display: flex !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+.accounts-import-section .action-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: var(--white) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+    white-space: nowrap !important;
+}
+
+.accounts-import-section .action-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: var(--white) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.accounts-import-section .unlink-btn {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.accounts-import-section .unlink-btn:hover {
+    background: rgba(239, 68, 68, 0.3) !important;
+    border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+/* Enhanced Pages Card */
+.accounts-import-section .enhanced-pages-card {
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-lg) !important;
+    overflow: hidden !important;
+    margin-bottom: 30px !important;
+}
+
+.pages-card-header {
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    padding: 24px 30px !important;
+}
+
+.pages-header-content {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+}
+
+.pages-title-section {
+    flex: 1 !important;
+}
+
+.pages-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--text-dark) !important;
+    margin-bottom: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.pages-title i {
+    color: #1877F2 !important;
+    font-size: 22px !important;
+}
+
+.pages-count-badge {
+    background: linear-gradient(135deg, #1877F2 0%, #166FE5 100%) !important;
+    color: var(--white) !important;
+    padding: 4px 8px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    margin-left: 8px !important;
+}
+
+.pages-subtitle {
+    font-size: 14px !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 0 !important;
+}
+
+.pages-actions {
+    display: flex !important;
+    gap: 8px !important;
+}
+
+.pages-action-btn {
+    width: 36px !important;
+    height: 36px !important;
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    color: var(--text-muted) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+}
+
+.pages-action-btn:hover {
+    background: #1877F2 !important;
+    color: var(--white) !important;
+    border-color: #1877F2 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Status Alerts */
+.status-alert {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 16px 20px !important;
+    margin: 16px 0 !important;
+    border-radius: 12px !important;
+    border-left: 4px solid !important;
+}
+
+.status-alert.danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-left-color: #EF4444 !important;
+}
+
+.alert-icon {
+    width: 32px !important;
+    height: 32px !important;
+    background: #EF4444 !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--white) !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+}
+
+.alert-content {
+    flex: 1 !important;
+    color: #B91C1C !important;
+    font-size: 14px !important;
+}
+
+.alert-content strong {
+    font-weight: 600 !important;
+    margin-right: 4px !important;
+}
+
+.pages-card-body {
+    padding: 30px !important;
+}
+
+.pages-grid-container {
+    background: #F9FAFB !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    border: 1px solid var(--border-light) !important;
+}
+
+.pages-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+/* Enhanced Page Cards */
+.enhanced-page-card {
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.enhanced-page-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    border-color: #1877F2 !important;
+}
+
+.page-card-header {
+    padding: 20px !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%) !important;
+}
+
+.page-avatar-section {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+.page-avatar {
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+.page-avatar-image {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--border-light) !important;
+    object-fit: cover !important;
+}
+
+.page-status-indicator {
+    position: absolute !important;
+    bottom: -2px !important;
+    right: -2px !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--white) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 8px !important;
+}
+
+.page-status-indicator.active {
+    background: #10B981 !important;
+    color: var(--white) !important;
+}
+
+.page-status-indicator.inactive {
+    background: #6B7280 !important;
+    color: var(--white) !important;
+}
+
+.page-info {
+    flex: 1 !important;
+}
+
+.page-name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin-bottom: 8px !important;
+}
+
+.page-link {
+    color: var(--text-dark) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.page-link:hover {
+    color: #1877F2 !important;
+    text-decoration: none !important;
+}
+
+.page-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.page-email,
+.page-id {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    color: var(--text-muted) !important;
+}
+
+.page-email i,
+.page-id i {
+    font-size: 10px !important;
+    color: #1877F2 !important;
+}
+
+/* Instagram Section */
+.instagram-section {
+    background: linear-gradient(135deg, rgba(228, 64, 95, 0.1) 0%, rgba(131, 58, 180, 0.05) 100%) !important;
+    border: 1px solid rgba(228, 64, 95, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    margin-top: 12px !important;
+}
+
+.instagram-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #E4405F !important;
+    margin-bottom: 6px !important;
+}
+
+.instagram-badge i {
+    font-size: 14px !important;
+}
+
+.instagram-username {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.instagram-link {
+    color: #E4405F !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+}
+
+.instagram-link:hover {
+    color: #C13584 !important;
+    text-decoration: none !important;
+}
+
+.sync-instagram-btn {
+    background: none !important;
+    border: none !important;
+    color: #E4405F !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    padding: 4px !important;
+    border-radius: 4px !important;
+    transition: all 0.3s ease !important;
+}
+
+.sync-instagram-btn:hover {
+    background: rgba(228, 64, 95, 0.1) !important;
+    transform: rotate(180deg) !important;
+}
+
+/* Page Actions */
+.page-card-body {
+    padding: 20px !important;
+}
+
+.page-actions-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+.quick-actions {
+    display: flex !important;
+    gap: 8px !important;
+}
+
+.quick-action-btn {
+    flex: 1 !important;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    text-decoration: none !important;
+    color: var(--text-dark) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.analytics-btn:hover {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
+    color: var(--white) !important;
+    border-color: #3B82F6 !important;
+    text-decoration: none !important;
+}
+
+.visit-btn:hover {
+    background: linear-gradient(135deg, #1877F2 0%, #166FE5 100%) !important;
+    color: var(--white) !important;
+    border-color: #1877F2 !important;
+    text-decoration: none !important;
+}
+
+/* Bot Controls */
+.bot-controls {
+    background: #F9FAFB !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    border: 1px solid var(--border-light) !important;
+}
+
+.bot-status {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+}
+
+.status-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-dark) !important;
+}
+
+.status-value {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.status-value.active {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #059669 !important;
+}
+
+.status-value.inactive {
+    background: rgba(107, 114, 128, 0.1) !important;
+    color: #6B7280 !important;
+}
+
+.bot-action-buttons {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+}
+
+.bot-action-btn {
+    background: var(--white) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex: 1 !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    box-sizing: border-box !important;
+}
+
+.enable-btn:hover {
+    background: #10B981 !important;
+    color: var(--white) !important;
+    border-color: #10B981 !important;
+}
+
+.disable-btn:hover {
+    background: #6B7280 !important;
+    color: var(--white) !important;
+    border-color: #6B7280 !important;
+}
+
+.restart-btn:hover {
+    background: #F59E0B !important;
+    color: var(--white) !important;
+    border-color: #F59E0B !important;
+}
+
+.delete-bot-btn:hover {
+    background: #EF4444 !important;
+    color: var(--white) !important;
+    border-color: #EF4444 !important;
+}
+
+/* Page Management */
+.page-management {
+    border-top: 1px solid var(--border-light) !important;
+    padding-top: 16px !important;
+}
+
+.management-actions {
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.management-btn {
+    background: var(--white) !important;
+    border: 1px solid #EF4444 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #EF4444 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.management-btn:hover:not(:disabled) {
+    background: #EF4444 !important;
+    color: var(--white) !important;
+}
+
+.delete-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    border-color: var(--border-light) !important;
+    color: var(--text-muted) !important;
+}
+
+/* Hover Effects */
+.header-icon:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2) !important;
+}
+
+.header-icon:hover i {
+    transform: scale(1.1) !important;
+}
+
+.badge-item:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px) !important;
+}
+
+.flow-step:hover .step-icon {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+}
