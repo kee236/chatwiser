@@ -120,6 +120,98 @@ class Home extends CI_Controller
 
 
 
+
+
+public function access_forbidden()
+{
+    $data = array(
+        "page_title" => $this->lang->line("Access Denied"),
+        "message" => $this->lang->line("You do not have permission to access this content")
+    );
+    $this->load->view('page/error_view', $data);
+}
+
+public function error_404()
+{
+    $data = array(
+        "page_title" => $this->lang->line("Page Not Found"),
+        "message" => $this->lang->line("The page you are looking for does not exist")
+    );
+    $this->load->view('page/error_view', $data);
+}
+
+
+
+public function login_page($is_team_login = '0')
+{
+    // ย้ายการตรวจสอบและโหลดไลบรารีไปไว้ใน Controller หรือ Helper
+    if ($this->session->userdata('logged_in') == 1) redirect('dashboard', 'location');
+
+    $this->load->library("GoogleLogin");
+    $data["google_login_button"] = $this->googlelogin->set_login_button();
+
+    $this->load->library("FacebookLogin");
+    $data['fb_login_button'] = $this->facebooklogin->getLoginButton(site_url("home/facebook_login_back"));
+
+    $data["page_title"] = $this->lang->line("Login");
+    $data['is_team_login'] = $is_team_login;
+
+    // เรียกใช้ฟังก์ชัน Controller ที่จัดระเบียบแล้ว
+    $this->_subscription_viewcontroller($data);
+}
+
+public function login($is_team_login = '0')
+{
+    // ใช้ password_verify() แทน md5()
+    if ($this->form_validation->run() == FALSE) {
+        $this->login_page($is_team_login);
+        return;
+    }
+
+    $username = $this->input->post('username', TRUE);
+    $password = $this->input->post('password', TRUE);
+
+    $table = ($is_team_login == '1') ? 'team_members' : 'users';
+    $where = array('email' => $username, "deleted" => "0", "status" => "1");
+    $info = $this->basic->get_data($table, array("where" => $where), '', '', '', '', '', '', 1);
+
+    if ($info['extra_index']['num_rows'] == 0) {
+        $this->session->set_flashdata('login_msg', $this->lang->line("invalid email or password"));
+        redirect(uri_string());
+    }
+
+    $hashed_password = $info[0]['password'];
+    if (!password_verify($password, $hashed_password)) {
+        // กรณีรหัสผ่านไม่ตรงกัน
+        $this->session->set_flashdata('login_msg', $this->lang->line("invalid email or password"));
+        redirect(uri_string());
+    }
+
+    // ตั้งค่า session และ redirect ไปยัง dashboard
+    $this->session->set_userdata('logged_in', 1);
+    $this->session->set_userdata('user_id', $info[0]['id']);
+    // ... (ส่วนที่เหลือของการตั้งค่า session)
+    redirect('dashboard', 'location');
+}
+
+
+
+
+public function _front_viewcontroller($data = array())
+{
+    $this->load->helper('theme'); // โหลด helper
+    $loadthemebody = $this->config->item('theme_front') ?: "purple";
+    $data['THEMECOLORCODE'] = get_theme_color_code($loadthemebody);
+
+    $current_theme = $this->config->item('current_theme') ?: 'modern';
+    $data['body_load'] = load_theme_view('site/' . $current_theme . '/theme_front.php');
+
+    $this->load->view($data['body_load'], $data);
+}
+
+
+
+
     /**
      * Handles Google login callback and user creation.
      */
