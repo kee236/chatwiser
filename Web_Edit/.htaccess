@@ -1,0 +1,19 @@
+# .htaccess in your CodeIgniter root
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+# Disallow access to .env file
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Force HTTPS
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
