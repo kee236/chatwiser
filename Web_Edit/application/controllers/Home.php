@@ -439,6 +439,26 @@ class Home extends CI_Controller
      * Loads the frontend view for landing pages.
      * @param array $data Data to pass to the view.
      */
+
+public function _subscription_viewcontroller($data = array())
+    {
+        $current_theme = $this->config->item('current_theme') ?: 'modern';
+        $data['body'] = $data['body'] ?? "site/modern/blank";
+        $data['page_title'] = $data['page_title'] ?? "";
+
+        // Use a helper function or service for theme path resolution
+        $theme_load = file_exists(APPPATH . 'views/site/' . $current_theme . '/subscription_theme.php') ?
+            'site/' . $current_theme . '/subscription_theme' :
+            'site/modern/subscription_theme';
+
+        $data['is_rtl'] = $this->is_rtl;
+        $this->load->view($theme_load, $data);
+    }
+
+    /**
+     * Loads the frontend view for landing pages.
+     * @param array $data Data to pass to the view.
+     */
     public function _front_viewcontroller($data = array())
     {
         // $this->SystemConfigService->disableCache(); // Call service method for caching
@@ -458,4 +478,129 @@ class Home extends CI_Controller
         // if (file_exists(APPPATH . 'core/licence_type.txt')) $this->LicenseService->checkLicenseAction();
 
         $data['is_rtl'] = $this->is_rtl;
-        $this->load->view($body_load, 
+        $this->load->view($body_load, $data);
+    }
+
+    /**
+     * Loads the main admin/member dashboard view.
+     * @param array $data Data to pass to the view.
+     */
+    public function _viewcontroller($data = array())
+    {
+        $data['body'] = $data['body'] ?? $this->config->item('default_page_url');
+        $data['page_title'] = $data['page_title'] ?? $this->lang->line("Admin Panel");
+
+        // Set unique download ID for session if not set
+        if ($this->session->userdata('download_id_front') == "") {
+            $this->session->set_userdata('download_id_front', md5(time() . $this->SystemConfigService->generateRandomNumber(10)));
+        }
+
+        // Fetch Facebook account switching info
+        if ($this->session->userdata('user_type') == 'Admin' || in_array(65, $this->module_access)) {
+            $fb_rx_account_switching_info = $this->basic->get_data("facebook_rx_fb_user_info", ["where" => ["user_id" => $this->user_id]]);
+            $data["fb_rx_account_switching_info"] = [];
+            foreach ($fb_rx_account_switching_info as $value) {
+                $data["fb_rx_account_switching_info"][$value["id"]] = ['name' => $value["name"], 'access_token' => $value['access_token']];
+            }
+        }
+
+        $data["language_info"] = $this->SystemConfigService->getLanguageList(); // Use service method
+        // $data["themes"] = $this->SystemConfigService->getThemeList(); // Assuming you have these methods
+        // $data["themes_front"] = $this->SystemConfigService->getFrontThemeList();
+
+  // Load menu data (consider caching for performance)
+        $data['menus'] = $this->basic->get_data('menu', '', '', '', '', '', 'serial asc');
+        $data['menu_child_1_map'] = $this->_map_menu_children('menu_child_1', 'parent_id');
+        $data['menu_child_2_map'] = $this->_map_menu_children('menu_child_2', 'parent_child');
+
+        // Announcement data
+        $this->db->where($this->LivechatService->getAnnouncementWhereClause($this->user_id, $this->is_manager, $this->real_user_id));
+        $data['annoucement_data'] = $this->basic->get_data("announcement", $where = '', $select = '', $join = '', $limit = '', $start = NULL, $order_by = 'created_at DESC');
+
+        // Browser notification status
+        $browser_notification = $this->basic->get_data("users", ["where" => ['id' => $this->user_id]], ['browser_notification_enabled']);
+        $data['browser_notification_enabled'] = $browser_notification[0]['browser_notification_enabled'] ?? '0';
+
+        $data['is_rtl'] = $this->is_rtl;
+        // if (!isset($data['media_type'])) $data['media_type'] = $this->using_media_type; // This needs to be set from somewhere else
+
+        $this->load->view('admin/theme/theme', $data); // Assuming main admin theme
+    }
+
+    /**
+     * Helper to map menu children.
+     * @param string $table_name Table name (e.g., 'menu_child_1', 'menu_child_2')
+     * @param string $parent_key Key for parent ID (e.g., 'parent_id', 'parent_child')
+     * @return array Mapped array of menu children.
+     */
+    private function _map_menu_children(string $table_name, string $parent_key): array
+    {
+        $mapped_data = [];
+        $children = $this->basic->get_data($table_name, '', '', '', '', '', 'serial asc');
+        foreach ($children as $single_child) {
+            $mapped_data[$single_child[$parent_key]][$single_child['id']] = $single_child;
+        }
+        return $mapped_data;
+    }
+
+    /**
+     * Loads the site view controller (for public facing pages).
+     * @param array $data Data to pass to the view.
+     */
+    public function _site_viewcontroller($data = array())
+    {
+        // Load ad configuration via AdDisplayService
+        $this->AdDisplayService->loadAdConfig();
+
+        $data['page_title'] = $data['page_title'] ?? "";
+
+        // Fetch pricing and currency info from payment config
+        $payment_config = $this->basic->get_data("payment_config");
+        $currency = $payment_config[0]['currency'] ?? "THB"; // Default to THB
+        $data['price'] = 0; // Default price
+        $data['currency'] = $currency;
+        $data["curency_icon"] = $this->SystemConfigService->getCurrencyIcon($currency);
+
+        // Captcha for contact page (moved from constructor for specific page)
+        $data['contact_num1'] = $this->SystemConfigService->generateRandomNumber(2);
+        $data['contact_num2'] = $this->SystemConfigService->generateRandomNumber(1);
+        $contact_captcha = $data['contact_num1'] + $data['contact_num2'];
+        $this->session->set_userdata("contact_captcha", $contact_captcha);
+
+        $data["language_info"] = $this->SystemConfigService->getLanguageList(); // Use service method
+        $data["pricing_table_data"] = $this->basic->get_data("package", ["where" => ["is_default" => "0", "price > " => 0, "validity >" => 0, "visible" => "1"]], '', '', '', NULL, 'CAST(`price` AS SIGNED)');
+        $data["default_package"] = $this->basic->get_data("package", ["where" => ["is_default" => "1", "validity >" => 0, "price" => "Trial"]]);
+
+        // Get theme color from config/service
+        $loadthemebody = $this->config->item('theme_front') ?: "purple";
+        $data['THEMECOLORCODE'] = $this->SystemConfigService->getThemeColorCode($loadthemebody);
+
+        $current_theme = $this->config->item('current_theme') ?: 'modern';
+        $body_load = file_exists(APPPATH . 'views/site/' . $current_theme . '/index.php') ?
+            'site/' . $current_theme . '/index' :
+            'site/modern/index';
+
+        // License check should be handled by LicenseService or a hook
+        // if (file_exists(APPPATH . 'core/licence_type.txt')) $this->LicenseService->checkLicenseAction();
+        $data['is_rtl'] = $this->is_rtl;
+        $this->load->view($body_load, $data);
+    }
+
+    /**
+     * Recursively scans a directory for files (moved from original _scanAll)
+     * This might be better as a helper function or part of a FileUtilityService.
+     */
+    private function _scanAll($dir) {
+        $result = [];
+        foreach (scandir($dir) as $filename) {
+            if ($filename[0] === '.') continue;
+            $filePath = $dir . '/' . $filename;
+            if (is_dir($filePath)) {
+                $result = array_merge($result, $this->_scanAll($filePath));
+            } else {
+                $result[] = ['file' => $filePath];
+            }
+        }
+        return $result;
+    }
+}
