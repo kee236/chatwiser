@@ -119,6 +119,40 @@ class Home extends CI_Controller
     
 
 
+
+    /**
+     * Handles Google login callback and user creation.
+     */
+    public function google_login_back()
+    {
+        $this->load->library('GoogleLogin');
+        $user_details = $this->googlelogin->getUserDetails();
+
+        if (empty($user_details) || empty($user_details->email)) {
+            $this->session->set_flashdata('login_msg', $this->lang->line("Unable to retrieve Google account details."));
+            redirect('home/login_page');
+        }
+
+        // Use a dedicated service to handle all login logic
+        $this->load->service('SocialLoginService');
+        $login_result = $this->SocialLoginService->handleLoginCallback($user_details, 'google');
+
+        if ($login_result['status'] === 'success') {
+            redirect('dashboard', 'location');
+        } else {
+            $this->session->set_flashdata('login_msg', $login_result['message']);
+            redirect('home/login_page');
+        }
+    }
+
+
+
+
+    
+
+
+
+
 /**
      * Handles Facebook login callback.
      * @param string $config_id Facebook App configuration ID.
