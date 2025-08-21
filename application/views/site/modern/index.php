@@ -1,14 +1,4 @@
-<?php
-/*
-Theme Name: Modern 
-Unique Name: modern
-Theme URI: https://chatpion.com
-Author: Xerone IT
-Author URI: https://xeroneit.net
-Version: 1.0
-Description: This is a default theme provided by the Author of ChatPion. We highly recommend not to change core files for your customization needs. For your own customization, create your own theme as per our <a href="https://xeroneit.net/blog/xerochat-front-end-theme-development-manual" target="_BLANK">documentation</a>. 
-*/
-?>
+
 <!doctype html>
 <html class="no-js" lang="en" <?php if($is_rtl) echo 'dir="rtl" style="overflow-x:hidden;"';?>>
 
