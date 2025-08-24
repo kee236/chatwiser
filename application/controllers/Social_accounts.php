@@ -14,7 +14,7 @@ class Social_accounts extends Home
         if($this->session->userdata("facebook_rx_fb_user_info")==0 && $this->config->item("backup_mode")==1 && $this->uri->segment(2)!="app_delete_action")
         redirect('social_apps/index','refresh');
 
-        $this->important_feature();
+       // $this->important_feature();
         $this->member_validity();
         
         $this->load->library("fb_rx_login");       
