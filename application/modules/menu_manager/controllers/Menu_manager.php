@@ -1,15 +1,4 @@
 <?php
-/*
-Addon Name: Menu Manager
-Unique Name: menu_manager
-Module ID: 0
-Project ID: 0
-Addon URI: https://xerochat.com
-Author: Xerone IT
-Author URI: https://xeroneit.net
-Version: 1.0
-Description:
-*/
 
 require_once("application/controllers/Home.php"); // loading home controller
 
