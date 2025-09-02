@@ -8,8 +8,8 @@ class Payment extends Home
         if ($this->session->userdata('logged_in') != 1) redirect('home/login_page', 'location');
         $this->load->library('paypal_class');
         $this->load->library('stripe_class');
-        $this->important_feature();
-        $this->periodic_check();
+      //  $this->important_feature();
+      //  $this->periodic_check();
     }
 
  
@@ -22,9 +22,12 @@ class Payment extends Home
         $get_data = $this->basic->get_data("payment_config");
         $data['xvalue'] = isset($get_data[0])?$get_data[0]:array();
         if($this->is_demo == '1')
-            $data["xvalue"]["stripe_secret_key"]=$data["xvalue"]["stripe_publishable_key"]=$data["xvalue"]["paypal_email"]=$data["xvalue"]["paystack_secret_key"]=$data["xvalue"]["paystack_public_key"]=$data["xvalue"]["razorpay_key_id"]=$data["xvalue"]["razorpay_key_secret"]=$data["xvalue"]["mollie_api_key"]=$data["xvalue"]["mercadopago_public_key"]=$data["xvalue"]["mercadopago_public_key"]=$data["xvalue"]["sslcommerz_store_id"]=$data["xvalue"]["sslcommerz_store_password"]=$data["xvalue"]["senangpay_merchent_id"]=$data["xvalue"]["senangpay_secret_key"]=$data["xvalue"]["instamojo_api_key"]=$data["xvalue"]["instamojo_auth_token"]=$data["xvalue"]["toyyibpay_secret_key"]=$data["xvalue"]["toyyibpay_category_code"]=$data["xvalue"]["xendit_secret_api_key"]="XXXXXXXXXX";
+          
+    $data["xvalue"]["stripe_secret_key"]=$data["xvalue"]["stripe_publishable_key"]=$data["xvalue"]["paypal_email"]=$data["xvalue"]["paystack_secret_key"]=$data["xvalue"]["paystack_public_key"]=$data["xvalue"]["razorpay_key_id"]=$data["xvalue"]["razorpay_key_secret"]=$data["xvalue"]["mollie_api_key"]=$data["xvalue"]["mercadopago_public_key"]=$data["xvalue"]["mercadopago_public_key"]=$data["xvalue"]["sslcommerz_store_id"]=$data["xvalue"]["sslcommerz_store_password"]=$data["xvalue"]["senangpay_merchent_id"]=$data["xvalue"]["senangpay_secret_key"]=$data["xvalue"]["instamojo_api_key"]=$data["xvalue"]["instamojo_auth_token"]=$data["xvalue"]["toyyibpay_secret_key"]=$data["xvalue"]["toyyibpay_category_code"]=$data["xvalue"]["xendit_secret_api_key"]="XXXXXXXXXX";
+
         $paypal_stripe_currency_list = $this->paypal_stripe_currency_list();
-        $marcadopago_country = array('ar'=>'Argentina','br'=>'Brazil','co'=>'Colombia','mx'=>'Mexico','cl'=>'Chile','pe' => 'Peru','uy' => 'Uruguay');
+      
+  $marcadopago_country = array('ar'=>'Argentina','br'=>'Brazil','co'=>'Colombia','mx'=>'Mexico','cl'=>'Chile','pe' => 'Peru','uy' => 'Uruguay');
         asort($paypal_stripe_currency_list);
         $data['currency_list'] = $paypal_stripe_currency_list;
         $data['marcadopago_country'] = $marcadopago_country;
