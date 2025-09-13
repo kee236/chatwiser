@@ -3,17 +3,15 @@
     "description": "An all-in-one chatbot system for Facebook, Instagram, LINE, and more, with support for payment and logistics.",
     "type": "project",
     "require": {
-        "php": ">=7.4",
-
+        "php": ">=8.1",
         "vlucas/phpdotenv": "^5.6",
         "pusher/pusher-php-server": "^7.2",
         "symfony/var-dumper": "^6.3",
-        "google/apiclient": "^2.0"
-
+        "google/apiclient": "^2.15",
         "guzzlehttp/guzzle": "^7.8",
         "linecorp/line-bot-sdk": "^10.0",
         "facebook/graph-sdk": "^5.1",
-        "openai-php/client": "^0.8.0",
+        "openai-php/client": "^4.1",
         "omise/omise-php": "^2.16",
         "monolog/monolog": "^3.7"
     },
